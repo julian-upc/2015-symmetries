@@ -11,8 +11,9 @@ class Pentomino(object):
         return self.translate_coo(coo, -m)
 
     def normalize(self):
-        self = normalize_coo(self, 0)
-        self = normalize_coo(self, 1)
+        self = self.normalize_coo(0)
+        self = self.normalize_coo(1)
+        self.coos.sort()
         return self
 
     def flip(self, coo):
@@ -36,24 +37,22 @@ class Pentomino(object):
 
     def translate_by(self, by_vector):
         self = self.translate_coo(0, by_vector[0])
-        return self.translate_coo(1, by_vector[1])
+        self = self.translate_coo(1, by_vector[1])
+        return self
 
     def turn90(self):
-        for c in self.coos:
-            c = [c[1], c[0]]
-        return self
+        self.coos = [[-c[1], c[0]] for c in self.coos]
+        return self.normalize()
 
     def max(self):
         return max(self.coos)
 
     def __hash__(self):
-        h = 0
-        d = 0
+        self.coos.sort()
+        h = str()
         for c in self.coos:
-            h += c[0] * d
-            h += c[1] * d
-            d += 1
-        return h
+            h += str(c[0] + 1) + str(c[1] + 1) 
+        return int(h)
 
     def __eq__(self, other):
         for c in self.coos:
@@ -116,19 +115,43 @@ class Z(Pentomino):
 
 def all_pentominos():
     return [F(), I(), L(), P(), N(), T(), U(), V(), W(), X(), Y(), Z()]
-
+    
+def fixed_pentominos_of(p):
+    t = TileSet()
+    t.add(p)
+    t.add(p.flip(0))
+    t.add(p.flip(1))
+    t.add(p.flip(0))
+    t.add(p.flip(1).turn90())
+    t.add(p.flip(0))
+    t.add(p.flip(1))
+    t.add(p.flip(0))
+    return t
+    
+def all_fixed_pentominos():
+    plist = all_pentominos()
+    t = TileSet()
+    for p in plist:
+        t.addlist(fixed_pentominos_of(p))
+    return t
 
 class TileSet(object):
     def __init__(self, plist=[]):
         self.set = set()
-        for p in plist:
-            self.add(p)
+        self.addlist(plist)
 
     def __iter__(self):
         return iter(self.set)
         
     def add(self, p):
-        self.set.add(p)
+        q = copy.deepcopy(p)
+        #print(p.representation() + ' ' + str(p.__hash__()))
+        #print(q.representation() + ' ' + str(q.__hash__()))
+        self.set.add(q)
+        
+    def addlist(self, plist):
+        for p in plist:
+            self.add(p)
 
     def size(self):
         return len(self.set)
