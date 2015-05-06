@@ -97,6 +97,21 @@ class IncidenceMatrix(object):
     def appendRow(self, tileName, placement):
         """ a placement is a list of coordinates that indicates which squares the piece named tileName covers"""
         tile = self.columnObjectOfName[tileName]
+        cell = IncidenceCell(None, None, tile.up, tile, tile.name, str(tile.name) + "[" + str(tile.size) + "]")
+        tile.up.down = cell
+        tile.up = cell
+        tile.size += 1
+        for place in placement:
+            pcol = self.columnObjectOfName[place]
+            pcell = IncidenceCell(None, None, pcol.up, pcol, pcol.name, str(tile.name) + str(pcol.name))
+            pcol.up.down = pcell
+            pcol.up = pcell
+            pcell.left = cell
+            cell.right = pcell
+            cell = pcell
+            pcol.size += 1
+        cell.right = tile.up
+        tile.up.left = cell 
 
     def coverColumn(self, c):
         pass
