@@ -127,6 +127,26 @@ def fixed_pentominos_of(p):
     t.add(p.flip(1))
     t.add(p.flip(0))
     return t
+
+def fixed_pentominos_of_name_list(list):
+	il_list_of_pentominos(list)
+	t = TileSet()
+	for name in list:
+		p = pentomino_by_name(name)
+		t.addlist(fixed_pentominos_of(p))
+	return t
+	
+def is_list_of_pentominos(list):
+	all = ["F", "I", "L", "P", "N", "T", "U", "V", "W", "X", "Y", "Z"]
+	for p in list:
+		if p not in all:
+			raise ValueError("Error in pentomino list: " + str(p) + " is not a pentomino")
+
+def pentomino_by_name(name)
+	pentominos = all_pentominos()
+	for p in pentominos()
+		if p.name == name:
+			return p
     
 def all_fixed_pentominos():
     plist = all_pentominos()
