@@ -97,9 +97,9 @@ class IncidenceMatrix(object):
     def appendRow(self, tileName, placement):
         """ a placement is a list of coordinates that indicates which squares the piece named tileName covers"""
         tile = self.columnObjectOfName[tileName]
-        cell = IncidenceCell(None, None, tile.up, tile, tile.name, str(tile.name) + "[" + str(tile.size) + "]")
-        tile.up.down = cell
-        tile.up = cell
+        cell = IncidenceCell(None, None, tile.up, tile, tile.name, str(tile.name) + "[" + str(self.indexOfPiecePlacement[tileName]) + "]")
+        self.indexOfPiecePlacement[tileName] += 1
+        tile.up.down = tile.up = cell
         tile.size += 1
         for place in placement:
             pcol = self.columnObjectOfName[place]
@@ -114,7 +114,29 @@ class IncidenceMatrix(object):
         tile.up.left = cell 
 
     def coverColumn(self, c):
-        pass
+        #print(str(c.name))
+        c.right.left = c.left
+        c.left.right = c.right
+        currow = c.down
+        while currow is not c:
+            curcell = currow.right
+            while curcell is not currow:
+                curcell.down.up = curcell.up
+                curcell.up.down = curcell.down
+                self.columnObjectOfName[curcell.listHeader].size -= 1
+                curcell = curcell.right
+                #print(str(currow.name) + " " + str(curcell.name))
+            currow = currow.down
 
     def uncoverColumn(self, c):
-        pass
+        currow = c.up
+        while currow is not c:
+            curcell = currow.left
+            while curcell is not currow:
+                curcell.down.up = curcell
+                curcell.up.down = curcell
+                self.columnObjectOfName[curcell.listHeader].size += 1
+                curcell = curcell.left
+            currow = currow.up
+        c.right.left = c
+        c.left.right = c
