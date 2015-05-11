@@ -142,34 +142,14 @@ class IncidenceMatrix(object):
         c.left.right = c
 
     def is_valid_placement(self, coos):
-    	tiles = []
-        j = h.right
-    	while j is not h:
-    		if is_number(j.name):
-    		    tiles.append(j.name)
-    		j = j.right
-    	for c in coos:
-    		if str(c[0]) + str(c[1]) not in tiles:
-    			return false	
-    	return true
-    	
-	def append_all_possible_placements(self):
-		names = []
-		tiles = []
-		currentColumnObject = self.h.right
-		while currentColumnObject.name is not "root":
-			if is_number(currentColumnObject.name):
-				tiles.append(currentColumnObject.name)
-			else:
-				names.append(currentColumnObject.name)
-			currentColumnObject = currentColumnObject.right
-		pset = pentominos.fixed_pentominos_of_name_list(names)
-		max0 = max([int(s[0]) for s in tiles])
-		max1 = max([int(s[1]) for s in tiles])
-		for p in pset.set:
-			for i in [0:max0]
-				for j in [0:max1]
-					q = p.translate_by([i, j])
-					if is_valid_placement(q.coos):
-						self.appendRow(q.name, [str(c[0]) + str(c[1]) for c in q.coos])
-    
+        tiles = []
+        j = self.h.right
+        while j is not self.h:
+            if is_number(j.name):
+                tiles.append(j.name)
+            j = j.right
+        for c in coos:
+            if str(c[0]) + str(c[1]) not in tiles:
+                return False    
+        return True
+            
