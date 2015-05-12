@@ -97,13 +97,13 @@ class IncidenceMatrix(object):
     def appendRow(self, tileName, placement):
         """ a placement is a list of coordinates that indicates which squares the piece named tileName covers"""
         tile = self.columnObjectOfName[tileName]
-        cell = IncidenceCell(None, None, tile.up, tile, tile.name, str(tile.name) + "[" + str(self.indexOfPiecePlacement[tileName]) + "]")
+        cell = IncidenceCell(None, None, tile.up, tile, tile, str(tile.name) + "[" + str(self.indexOfPiecePlacement[tileName]) + "]")
         self.indexOfPiecePlacement[tileName] += 1
         tile.up.down = tile.up = cell
         tile.size += 1
         for place in placement:
             pcol = self.columnObjectOfName[place]
-            pcell = IncidenceCell(None, None, pcol.up, pcol, pcol.name, str(tile.name) + str(pcol.name))
+            pcell = IncidenceCell(None, None, pcol.up, pcol, pcol, str(tile.name) + str(pcol.name))
             pcol.up.down = pcell
             pcol.up = pcell
             pcell.left = cell
@@ -123,7 +123,7 @@ class IncidenceMatrix(object):
             while curcell is not currow:
                 curcell.down.up = curcell.up
                 curcell.up.down = curcell.down
-                self.columnObjectOfName[curcell.listHeader].size -= 1
+                curcell.listHeader.size -= 1
                 curcell = curcell.right
                 #print(str(currow.name) + " " + str(curcell.name))
             currow = currow.down
@@ -135,7 +135,7 @@ class IncidenceMatrix(object):
             while curcell is not currow:
                 curcell.down.up = curcell
                 curcell.up.down = curcell
-                self.columnObjectOfName[curcell.listHeader].size += 1
+                curcell.listHeader.size += 1
                 curcell = curcell.left
             currow = currow.up
         c.right.left = c
@@ -150,6 +150,7 @@ class IncidenceMatrix(object):
             j = j.right
         for c in coos:
             if str(c[0]) + str(c[1]) not in tiles:
+                #print(str(coos) + " is not valid")
                 return False    
         return True
             

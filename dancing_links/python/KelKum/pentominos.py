@@ -36,6 +36,7 @@ class Pentomino(object):
         return self
 
     def translate_by(self, by_vector):
+        #print("Translate " + str(self.coos) + " by " + str(by_vector))
         self = self.translate_coo(0, by_vector[0])
         self = self.translate_coo(1, by_vector[1])
         return self
