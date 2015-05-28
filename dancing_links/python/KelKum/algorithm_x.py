@@ -12,8 +12,8 @@ class Algorithm_X(object):
         #print(self.matrix.representation())
     
     def search(self, k, o):
-        print("search k = " + str(k) + " R[h] = " + str(self.matrix.h.right.name))
-        if incidence_matrix.is_number(self.matrix.h.right.name):
+        #print("search k = " + str(k) + " R[h] = " + str(self.matrix.h.right.name))
+        if self.matrix.h.right == self.matrix.h:
             print("All pentominos placed")
             print_current_solution(o)
             return
@@ -23,7 +23,7 @@ class Algorithm_X(object):
         #print(str(c.representation()))
         r = c.down
         while r is not c:
-            print(str(r.name) + " " + str(c.down.name))
+            #print(str(r.name) + " " + str(c.down.name))
             #o.append(r)
             j = r.right
             while j is not r:
@@ -58,7 +58,7 @@ class Algorithm_X(object):
                 c = j
                 s = j.size
             j = j.right
-        print(str(c.representation()))
+        #print(str(c.representation()))
         return c
         
 def append_all_possible_placements(matrix):
