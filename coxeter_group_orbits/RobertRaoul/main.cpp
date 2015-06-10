@@ -28,8 +28,8 @@ string printVector(VectorType v){
 int main(){
     
     
-    VectorType v = {1, 5, 9, 13, 17};
-    GeneratorList B2 = createMatrixB(5);
+    VectorType v = {0., 0.5, 0., 0., 0., 0.5};
+    GeneratorList B2 = createMatrixA(5);
     for (int i = 0; i < B2.size(); i++){
         cout << printVector(B2[i]) << endl;
     }

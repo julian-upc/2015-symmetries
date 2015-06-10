@@ -32,14 +32,41 @@
 
 class NotImplementedException : public std::exception {};
 
-template <typename E>
+
+typedef double E;
+
+const static E epsilon = 0.001;
+
 class coxeterVector : public std::vector<E>{
-    //using std::vector<E>::std::vector<E>;
+   
+public:
+    
+    coxeterVector(){}
+    
+    explicit coxeterVector(int dim): std::vector<E>(dim){}
+    
+    template <typename T>
+    coxeterVector(std::initializer_list<T> init)
+    : std::vector<E>(init) {}
+    
+    
+    bool operator==(const coxeterVector& rhs) const {
+        E sum =0;
+        coxeterVector a(*this);
+        for (int i =0; i < rhs.size(); i++) {
+            a[i] -= rhs[i];
+            sum += a[i]*a[i];
+        }
+        return (sum < epsilon);
+        
+    }
+    
+    
 };
 
 
 typedef double NumberType;
-typedef std::vector<NumberType> VectorType;
+typedef coxeterVector VectorType;
 typedef std::vector<VectorType> GeneratorList;
 typedef std::set<VectorType> Orbit;
 
@@ -81,13 +108,13 @@ VectorType reflection(VectorType normal, VectorType vector){
 GeneratorList createMatrixB(int dim){
     GeneratorList Matrix;
     for (int i = 0; i < dim-1; i++){
-        std::vector<NumberType> normal = VectorType(dim);
-        normal[i] = 1;
-        normal[i+1]= -1;
+        VectorType normal (dim);
+        normal[i] = 1.;
+        normal[i+1]= -1.;
         Matrix.push_back(normal);
     }
-    std::vector<NumberType> normal = VectorType(dim);
-    normal[dim-1] = 1;
+    VectorType normal (dim);
+    normal[dim-1] = 1.;
     Matrix.push_back(normal);
     return Matrix;
 }
@@ -95,9 +122,9 @@ GeneratorList createMatrixB(int dim){
 GeneratorList createMatrixA(int dim){
     GeneratorList Matrix;
     for (int i = 0; i < dim; i++){
-        std::vector<NumberType> normal = VectorType(dim+1);
-        normal[i] = 1;
-        normal[i+1]= -1;
+        VectorType normal (dim+1);
+        normal[i] = 1.;
+        normal[i+1]= -1.;
         Matrix.push_back(normal);
     }
     return Matrix;
@@ -105,12 +132,12 @@ GeneratorList createMatrixA(int dim){
 
 GeneratorList createMatrixEsix(){
     GeneratorList Matrix = {
-        {1,-1,0,0,0,0},
-        {0,1,-1,0,0,0},
-        {0,0,1,-1,0,0},
-        {0,0,0,1,1,0},
+        {1.,-1.,0.,0.,0.,0.},
+        {0.,1.,-1.,0.,0.,0.},
+        {0.,0.,1.,-1.,0.,0.},
+        {0.,0.,0.,1.,1.,0.},
         {-.5,-.5,-.5,-.5,-.5,sqrt(3)/2},
-        {0,0,0,1,-1,0},
+        {0.,0.,0.,1.,-1.,0.},
     };
         return Matrix;
 }
@@ -130,11 +157,15 @@ GeneratorList simple_roots(char type, int dim)
     }
 }
 
-void recursion(const GeneratorList& generators, VectorType v){
+void recursion(const GeneratorList& generators, VectorType v, int counter){
     for(int i = 0; i < generators.size(); i++){
+        std:: cout << i << std::endl;
         if (orbitSet.find(reflection(generators[i], v)) == orbitSet.end()) { //orbitSet contains reflection(generators[i], v)
             orbitSet.insert(reflection(generators[i], v));
-            recursion(generators, reflection(generators[i], v));
+            
+            counter += 1;
+            std::cout << "counter " << counter << std::endl;
+            recursion(generators, reflection(generators[i], v), counter);
         }
     }
 }
@@ -143,7 +174,7 @@ Orbit orbit(const GeneratorList& generators, const VectorType& v)
 {
     orbitSet.clear();
     orbitSet.insert(v);
-    recursion(generators,v);
+    recursion(generators,v,0);
     return orbitSet;
 }
 
