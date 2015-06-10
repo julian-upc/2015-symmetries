@@ -1,5 +1,5 @@
 #include <vector>
-#include "vec2.h"
+#include "Vector.h"
 
 #ifndef HYPERPLANE_H_
 #define HYPERPLANE_H_
@@ -7,26 +7,34 @@
 /* define the mathematical namespace */
 namespace math
 {
+	// differentiate direction and point vectors
+	typedef Vector vector;
+	typedef Vector point;
+
 	class Hyperplane
 	{
 	private:
 		// the normal vector
-		vec2 normal_vec;
+		vector normal_vec;
 		// a charactistic point on this hyperplane
-		vec2 center;
+		point center;
 
 	public:
 		// creates a hyperplane with normal in Y direction through the center coordinates
-		Hyperplane() : Hyperplane(ONE_Y){};
+		Hyperplane() 
+			: Hyperplane(three_D::X){};
 
 		// creates a hyperplane with given normal vector through the center coordinates
-		Hyperplane(vec2 normal_vec) : Hyperplane(ZERO, normal_vec){};
+		Hyperplane( const vector& normal_vec ) 
+			: Hyperplane(three_D::ZERO, normal_vec){};
 
 		// creates a full specified hyperplane
-		Hyperplane(vec2 center, vec2 normal_vec) : center(center), normal_vec(normal_vec) {};
+		Hyperplane( const point& center, const vector& normal_vec ) 
+			: center(center)
+			, normal_vec(normal_vec) {};
 
 		// mirroring a given point on this hyperplane
-		vec2 mirror( const vec2& point ) const;
+		point mirror( const point& p ) const;
 	};
 }
 

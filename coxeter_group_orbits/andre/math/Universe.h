@@ -1,26 +1,48 @@
-#pragma once
-
+#include <queue>
 #include <vector>
+#include <unordered_set>
 #include "Hyperplane.h"
-#include "vec2.h"
+#include "Vector.h"
 
+#ifndef _UNIVERSE_H_
+#define _UNIVERSE_H_
+
+// mathematical object
 namespace math {
 
+	// an orbit is a unordered set of points without multiple entries
+	typedef std::unordered_set<point, VectorHash> Orbit;
+
+	/* a universe contains multiple hyperplanes */
 	class Universe {
 	private:
+		// the hyperplanes
 		std::vector<Hyperplane> planes;
+		// a global variable to hold current orbits
+		Orbit orbit;
+		point p;
 
 	public:
-		Universe() : planes( std::vector<Hyperplane>() ){};
+		// default constructor
+		Universe() {};
 
-		Universe(std::vector<Hyperplane> planes) : planes(planes){};
+		// construct a universe by a set of hyperplanes
+		Universe(const std::vector<Hyperplane>& planes) : planes(planes){};
 
-		// TODO dont know if it is correct
+		// construct a copy of another universe
 		Universe(const Universe& uni) : planes(uni.planes){};
 
-		void addPlane(const Hyperplane& plane);
+		// adds a new hyperplane to this universe
+		void addPlane(const Hyperplane& plane){
+			planes.push_back(plane);
+		}
 
-		std::vector<vec2> getAllReflections(const vec2& point, int steps) const;
+		/* returns the orbit by given point */
+		Orbit getOrbit(const point& p, unsigned steps);
+
+		friend std::ostream& operator << (std::ostream& stream, const Orbit& o);
 	};
 
 }
+
+#endif /* _UNIVERSE_H_ */

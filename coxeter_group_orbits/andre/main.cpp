@@ -1,6 +1,8 @@
+#include <boost\lambda\lambda.hpp>
 #include <iostream>
-#include "math/vec2.h"
-#include "math/Universe.h"
+#include "math\Vector.h"
+#include "math\Hyperplane.h"
+#include "math\Universe.h"
 
 
 /* MITSCHRIFTEN
@@ -9,18 +11,25 @@ valgrind.org
 
 */
 
-int main(){
+using namespace math;
+
+int main123(){
 	std::cout << "Moin!" << std::endl;
 
-	math::Universe universe = math::Universe();
-	universe.addPlane( math::Hyperplane() );
+	vector orange(0,-1,1);
+	vector purple(0,0,1);
+	vector yellow(1,-1,0);
 
-	math::vec2 x(0,1);
-	std::vector<math::vec2> list = universe.getAllReflections(x, 2);
+	Hyperplane o_p(two_D::ZERO, orange);
+	Hyperplane p_p(two_D::ZERO, purple);
+	Hyperplane y_p(two_D::ZERO, yellow);
 
-	for (int i = 0; i < list.size(); i++){
-		std::cout << list[i] << std::endl;
-	}
+	Universe u({o_p, p_p, y_p});
+
+	point p(1, 0, 1);
+	Orbit orbit = u.getOrbit(p, 20);
+
+	std::cout << orbit << std::endl;
 
 	std::cin.get();
 	return 0;
