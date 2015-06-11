@@ -38,7 +38,7 @@ typedef double E;
 const static E epsilon = 0.001;
 
 class coxeterVector : public std::vector<E>{
-   
+    
 public:
     
     coxeterVector(){}
@@ -139,7 +139,7 @@ GeneratorList createMatrixEsix(){
         {-.5,-.5,-.5,-.5,-.5,sqrt(3)/2},
         {0.,0.,0.,1.,-1.,0.},
     };
-        return Matrix;
+    return Matrix;
 }
 
 

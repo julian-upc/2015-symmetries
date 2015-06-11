@@ -40,14 +40,14 @@ int main(){
         cout << printVector(s) << endl;
     }
     
-   /*
-    VectorType normal = { 16, -1, -0.5};
-    VectorType v = {1, 2, 3};
-    VectorType vector = reflection(normal, v);
-    cout << printVector(vector) << endl;
-    cout << printVector(reflection(normal, vector)) << endl;
-    
-    */
+    /*
+     VectorType normal = { 16, -1, -0.5};
+     VectorType v = {1, 2, 3};
+     VectorType vector = reflection(normal, v);
+     cout << printVector(vector) << endl;
+     cout << printVector(reflection(normal, vector)) << endl;
+     
+     */
     return 0;
 }
 
