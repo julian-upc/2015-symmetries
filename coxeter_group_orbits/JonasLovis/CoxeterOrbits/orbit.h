@@ -26,21 +26,16 @@ class NotImplementedException : public std::exception {};
 
 
 // PI for cosine function & Radius,eps to compare points in Orbit
-const static double PI = 3.14159265;
-
 typedef double NumberType;
 typedef EpsilonVector VectorType;
 typedef std::vector<VectorType> GeneratorList;
 typedef std::set<VectorType> Orbit;
 typedef GeneratorList MatrixType;
 
-// Global orbit
-Orbit orb;
-
 GeneratorList give_A(const int dim)
 {
 	GeneratorList list;
-	for (int i = 0; i < dim; ++i) {
+	for (int i = 0; i < dim; i++) {
 		VectorType vec(dim + 1);
 		vec[i] = 1;
 		vec[i + 1] = -1;
@@ -51,10 +46,16 @@ GeneratorList give_A(const int dim)
 
 GeneratorList give_B(int dim)
 {
-	GeneratorList list = give_A(dim - 1);
-	VectorType v(dim);
-	v[dim - 1] = 1;
-	list.push_back(v);
+	GeneratorList list;
+	for (int i = 0; i < dim - 1; i++) {
+		VectorType vec(dim);
+		vec[i] = 1;
+		vec[i + 1] = -1;
+		list.push_back(vec);
+	}
+	VectorType vec(dim);
+	vec[dim - 1] = 1;
+	list.push_back(vec);
 	return list;
 }
 
@@ -69,20 +70,6 @@ GeneratorList give_C(int dim)
 
 GeneratorList give_D(int dim)
 {
-	/*
-	Read rowwise, these simple root vectors are
-	1 -1  0 0 ... 0 0
-	0  1 -1 0 ... 0 0
-	...
-	0  0  0 0 ... 1 -1
-	0  0  0 0 ... 1  1
-	The indexing of the Dynkin diagram is
-	n-2
-	/
-	0 - 1 - 2 - ... - n-3
-	\
-	n-1
-	*/
 	VectorType v(dim);
 	v[dim - 2] = v[dim - 1] = 1;
 	GeneratorList list = give_A(dim - 1);
@@ -99,72 +86,38 @@ GeneratorList give_E(int dim)
 		vec[i + 1] = -1;
 		list.push_back(vec);
 	}
-	if (dim == 6){
-		VectorType v(6);
-		for (int i = 0; i < 5; ++i)
-			v[i] = -0.5;
-		v[5] = 0.5 * sqrt(3);
-		list.push_back(v);
-	}
-	if (dim == 7){
-		VectorType v(7);
-		for (int i = 0; i<6; ++i)
-			v[i] = -0.5;
-		v[6] = 0.5 * sqrt(2);
-		list.push_back(v);
-
-	}
-	if (dim == 8){
-		VectorType v(8);
-		for (int i = 0; i<8; ++i)
-			v[i] = -0.5;
-		list.push_back(v);
-	}
+	if (dim == 6)
+		list.push_back({ -0.5, -0.5, -0.5, -0.5, -0.5, sqrt(3) / 2. });
+	if (dim == 7)
+		list.push_back({ -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, sqrt(2) / 2. });
+	if (dim == 8)
+		list.push_back({ -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5 });
 	VectorType vec1(dim); vec1[dim - 3] = 1; vec1[dim - 2] = 1;
 	list.push_back(vec1);
 	return list;
 }
 
 GeneratorList give_F(){
-	GeneratorList list;
-	for (int i = 0; i < 2; ++i){
-		VectorType v(4);
-		v[i] = 1;
-		v[i + 1] = -1;
-		list.push_back(v);
-	}
-	VectorType v1(4);
-	v1[2] = 1;
-	list.push_back(v1);
-	VectorType v2(4);
-	for (int i = 0; i < 4; ++i){
-		v2[i] = - 0.5;
-	}
-	list.push_back(v2);
+	GeneratorList list = { { 0.5, -0.5, -0.5, -0.5 },
+	{ 0., 1., -1., 0. },
+	{ 0., 0., 1., -1. },
+	{ 0., 0., 0., 1. }
+	};
 	return list;
 }
 
 GeneratorList give_G()
 {
-	std::cout << "Enter G" << '\n';
-	GeneratorList list;
-	VectorType v(3);
-	v[0] = 0;
-	v[1] = 1;
-	v[2] = -1;
-	list.push_back(v);
-	VectorType v1(3);
-	v1[0] = 1;
-	v1[1] = -2;
-	v1[2] = 1;
-	list.push_back(v1);
+	GeneratorList list = { { 0., 1., -1. },
+	{ 1., -2., 1. } };
 	return list;
 }
+
 
 GeneratorList give_H(int dim){
 	const NumberType tau(0.5 + 0.5 * sqrt(5)); // golden ratio
 	GeneratorList list;
-	if (dim = 3){
+	if (dim == 3){
 		VectorType v(3);
 		v[0] = 2;
 		list.push_back(v);
@@ -177,14 +130,14 @@ GeneratorList give_H(int dim){
 		v2[2] = 2;
 		list.push_back(v2);
 	}
-	if (dim = 4){
+	if (dim == 4){
 		VectorType v(4);
 		v[0] = (1 + tau) * 0.5;
 		v[1] = v[2] = v[3] = (1 - tau) * 0.5;
 		list.push_back(v);
 		VectorType v1(4);
 		v1[0] = -1;
-		v1[1] =  1;
+		v1[1] = 1;
 		list.push_back(v1);
 		VectorType v2(4);
 		v2[1] = -1;
@@ -198,13 +151,6 @@ GeneratorList give_H(int dim){
 	return list;
 }
 
-GeneratorList give_I(int dim)
-{
-	GeneratorList list{ { 1., 0. }, { 0., 1. } };
-	double cosine = cos(PI / dim);
-	list[1][0] = cosine / sqrt(1.0 - pow(cosine, 2));
-	return list;
-}
 
 GeneratorList simple_roots(char type, int dim)
 {
@@ -222,8 +168,8 @@ GeneratorList simple_roots(char type, int dim)
 			return give_C(dim);
 		else throw new NotImplementedException();
 	case 'D':
-		if (dim > 0)
-			return give_D(dim);
+		if (dim > 0) return give_D(dim);
+		else throw new NotImplementedException();
 	case 'E':
 		if (dim == 6)
 			return give_E(dim);
@@ -233,55 +179,36 @@ GeneratorList simple_roots(char type, int dim)
 			return give_E(dim);
 		else throw new NotImplementedException();
 	case 'F':
-		if (dim == 4) 
-			return give_F();
-		else throw new NotImplementedException();
+		if (dim == 4) return give_F();
+		throw new NotImplementedException();
 	case 'G':
 		if (dim == 2) return give_G();
-		else throw new NotImplementedException();
+		throw new NotImplementedException();
 	case 'H':
-		if (dim == 2)
-			return give_H(dim);
-		if (dim == 3)
-			return give_H(dim);
-		if (dim == 4) 
-			return give_H(dim);
-		else throw new NotImplementedException();
+		return give_H(dim);
 	case 'I':
-		if (dim < 1) throw new NotImplementedException();
-		else return give_I(dim);
+		throw new NotImplementedException();
 	default:
 		throw new NotImplementedException();
 	}
 }
 
-NumberType scalarProduct(VectorType a, VectorType b)
-{
-	NumberType c = 0;
-	for (size_t i = 0; i < a.size(); i++)
-		c += a[i] * b[i];
-	return c;
-}
-
-void reorbit(const GeneratorList& generators, const VectorType& v);
-
 Orbit orbit(const GeneratorList& generators, const VectorType& v)
 {
-	orb.clear();
-	reorbit(generators, v);
+	Orbit orb;
+	Orbit newPoints{ v };
+	Orbit::iterator it = newPoints.begin();
+	VectorType vec;
+	while (newPoints.empty() == false){
+		it = newPoints.begin();
+		vec = *it;
+		newPoints.erase(it);
+		if (std::get<1>(orb.insert(vec))){
+			for (int i = 0; i < generators.size(); i++)
+				newPoints.insert(vec.mirror(generators[i]));
+		} // endif
+	} // endwhile
 	return orb;
-}
-
-void reorbit(const GeneratorList& generators, const VectorType& v)
-{
-	for (size_t i = 0; i<generators.size(); ++i) {
-		VectorType mirror_v = v.mirror(generators[i]);
-		if (orb.find(mirror_v) == orb.end()){
-			//std::cout << "Orb Size: " << orb.size() << '\n';
-			orb.insert(mirror_v);
-			reorbit(generators, mirror_v);
-		}
-	}
 }
 
 #endif // __ORBIT_H_
@@ -291,4 +218,5 @@ void reorbit(const GeneratorList& generators, const VectorType& v)
 // c-basic-offset:3
 // indent-tabs-mode:nil
 // End:
+
 

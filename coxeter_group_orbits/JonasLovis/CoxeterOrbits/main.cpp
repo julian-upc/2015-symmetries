@@ -10,15 +10,14 @@
 #include <set>
 #include "orbit.h"
 #include <math.h>
-
+#include "epsilonVector.h"
 const static char letter = 'G';
 
 int main(int argc, const char * argv[]) {
-	for (int i = 2; i < 7; i++){
+	/*for (int i = 2; i < 7; i++){
 		GeneratorList list(simple_roots(letter, i));
 		std::cout << "Generator Size: " << list.size() << '\n';
 		for (size_t j = 0; j < list.size(); j++)
-			std::cout << list[j].print() << '\n';
 		VectorType vec(i);
 		if (letter == 'I') {
 			vec[0] = 0.2124;
@@ -33,7 +32,6 @@ int main(int argc, const char * argv[]) {
 			for (int j = 0; j < i; j++)
 				vec[j] = (i*j + 0.7)*pow(-1, j);
 		}
-		std::cout << "Vector: " << vec.print() << '\n';
 		if (letter == 'B')
 		{
 			NumberType should = pow(2, i);
@@ -45,5 +43,5 @@ int main(int argc, const char * argv[]) {
 		std::cout << "Orbit Size: " << orb.size() << '\n';
 		//  std::cout << orb.setRepresentation();
 	}
-	return 0;
+	return 0;*/
 }

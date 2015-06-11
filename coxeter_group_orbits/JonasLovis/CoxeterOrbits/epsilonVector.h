@@ -6,13 +6,13 @@
 //  Copyright (c) 2015 LovisJonas. All rights reserved.
 //
 
-#ifndef CoxeterOrbit_epsilonVector_h
-#define CoxeterOrbit_epsilonVector_h
+#ifndef __epsilonVector_h
+#define __epsilonVector_h
 
 #include <vector>
 #include <math.h>
 
-const static double epsilon = 0.01;
+const static double epsilon = 0.0001;
 
 typedef double E;
 
@@ -20,11 +20,11 @@ class EpsilonVector : public std::vector<E>
 {
 private:
 
-	E scalarProduct(const EpsilonVector& a, const EpsilonVector& b) const
+	E scalarProduct(const EpsilonVector& b) const
 	{
 		E c = 0;
-		for (size_t i = 0; i < a.size(); i++)
-			c += a[i] * b[i];
+		for (int i = 0; i < b.size(); i++)
+			c += this->at(i) * b[i];
 		return c;
 	}
 
@@ -42,10 +42,9 @@ public:
 		: std::vector<E>(init)
 	{}
 
-
 	EpsilonVector mirror(EpsilonVector normal) const
 	{
-		double scalar = scalarProduct(normal, normal);
+		double scalar = normal.scalarProduct(normal);
 		long s = this->size();
 		std::vector<std::vector<double>> matrix(s, EpsilonVector(s));
 		EpsilonVector mir(s);
@@ -62,31 +61,33 @@ public:
 	bool operator==(const EpsilonVector& rhs) const
 	{
 		EpsilonVector a(*this);
-		for (size_t i = 0; i < rhs.size(); i++) {
-			a[i] -= rhs[i];
+		for (int i = 0; i < rhs.size(); i++) {
+			if (a[i] <  rhs[i] - epsilon || a[i] > rhs[i] + epsilon)
+				return false;
 		}
-		return (scalarProduct(a, a) < epsilon);
+		return true;
 	}
 
-	bool operator!=(const EpsilonVector& rhs) const
+	bool operator < (const EpsilonVector& rhs) const
 	{
-		return !(*this == rhs);
-	}
-
-	std::string print() const
-	{
-		std::string output;
-		for (size_t i = 0; i < this->size(); i++){
-			std::ostringstream os;
-			os << this->at(i);
-			std::string str = os.str();
-			output.append(str);
-			output.append(" ");
+		for (int i = 0; i < rhs.size(); i++) {
+			if (this->at(i) < rhs[i] - epsilon) {
+				return true;
+			}
+			else {
+				if (this->at(i) > rhs[i] + epsilon)
+					return false;
+			}
 		}
-		return output;
+		return false;
 	}
 
-
+	friend std::ostream& operator << (std::ostream& os, const EpsilonVector& v)
+	{
+		for (const auto& x : v)
+			os << x << " ";
+		return os;
+	}
 }; // Klasse zuende.
 
 #endif
