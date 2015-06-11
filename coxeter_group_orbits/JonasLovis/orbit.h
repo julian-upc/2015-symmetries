@@ -59,6 +59,38 @@ GeneratorList give_B(int dim)
     return list;
 }
 
+GeneratorList give_C(int dim)
+{
+	GeneratorList list = give_A(dim - 1);
+	VectorType v(dim);
+	v[dim - 1] = 2;
+	list.push_back(v);
+	return list;
+}
+
+GeneratorList give_D(int dim)
+{
+	/*
+	Read rowwise, these simple root vectors are
+	1 -1  0 0 ... 0 0
+	0  1 -1 0 ... 0 0
+	...
+	0  0  0 0 ... 1 -1
+	0  0  0 0 ... 1  1
+	The indexing of the Dynkin diagram is
+	n-2
+	/
+	0 - 1 - 2 - ... - n-3
+	\
+	n-1
+	*/
+	VectorType v(dim);
+	v[dim - 2] = v[dim - 1] = 1;
+	GeneratorList list = give_A(dim - 1);
+	list.push_back(v);
+	return list;
+}
+
 GeneratorList give_E(int dim)
 {
     GeneratorList list;
@@ -95,6 +127,44 @@ GeneratorList give_G()
     return list;
 }
 
+
+GeneratorList give_H(int dim){
+	const NumberType tau(0.5 + 0.5 * sqrt(5)); // golden ratio
+	GeneratorList list;
+	if (dim = 3){
+		VectorType v(3);
+		v[0] = 2;
+		list.push_back(v);
+		VectorType v1(3);
+		v1[0] = -tau;
+		v1[1] = tau - 1;
+		v1[2] = -1;
+		list.push_back(v1);
+		VectorType v2(3);
+		v2[2] = 2;
+		list.push_back(v2);
+	}
+	if (dim = 4){
+		VectorType v(4);
+		v[0] = (1 + tau) * 0.5;
+		v[1] = v[2] = v[3] = (1 - tau) * 0.5;
+		list.push_back(v);
+		VectorType v1(4);
+		v1[0] = -1;
+		v1[1] =  1;
+		list.push_back(v1);
+		VectorType v2(4);
+		v2[1] = -1;
+		v2[2] = 1;
+		list.push_back(v2);
+		VectorType v3(4);
+		v3[2] = -1;
+		v3[3] = 1;
+		list.push_back(v3);
+	}
+	return list;
+}
+
 GeneratorList give_I(int dim)
 {
     GeneratorList list {{1., 0.},{0.,1.}};
@@ -116,11 +186,12 @@ GeneratorList simple_roots(char type, int dim)
             else throw new NotImplementedException();
         case 'C':
             if (dim > 0)
-                return give_B(dim);
+                return give_C(dim);
             else throw new NotImplementedException();
         case 'D':
-            if (dim > 4) throw new NotImplementedException();
-            else throw new NotImplementedException();
+            if (dim > 4) give_D(dim);
+			else if ( dim > 0 ) give_A(dim);
+            	else throw new NotImplementedException();
         case 'E':
             if (dim == 6)
                 return give_E(dim);
@@ -148,8 +219,6 @@ GeneratorList simple_roots(char type, int dim)
     }
 }
 
-void reorbit(const GeneratorList& generators, const VectorType& v );
-
 Orbit orbit(const GeneratorList& generators, const VectorType& v )
 {
     Orbit orb;
@@ -173,4 +242,5 @@ Orbit orbit(const GeneratorList& generators, const VectorType& v )
 // c-basic-offset:3
 // indent-tabs-mode:nil
 // End:
+
 
