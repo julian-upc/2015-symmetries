@@ -70,20 +70,6 @@ GeneratorList give_C(int dim)
 
 GeneratorList give_D(int dim)
 {
-	/*
-	Read rowwise, these simple root vectors are
-	1 -1  0 0 ... 0 0
-	0  1 -1 0 ... 0 0
-	...
-	0  0  0 0 ... 1 -1
-	0  0  0 0 ... 1  1
-	The indexing of the Dynkin diagram is
-	n-2
-	/
-	0 - 1 - 2 - ... - n-3
-	\
-	n-1
-	*/
 	VectorType v(dim);
 	v[dim - 2] = v[dim - 1] = 1;
 	GeneratorList list = give_A(dim - 1);
@@ -131,7 +117,7 @@ GeneratorList give_G()
 GeneratorList give_H(int dim){
 	const NumberType tau(0.5 + 0.5 * sqrt(5)); // golden ratio
 	GeneratorList list;
-	if (dim = 3){
+	if (dim == 3){
 		VectorType v(3);
 		v[0] = 2;
 		list.push_back(v);
@@ -144,7 +130,7 @@ GeneratorList give_H(int dim){
 		v2[2] = 2;
 		list.push_back(v2);
 	}
-	if (dim = 4){
+	if (dim == 4){
 		VectorType v(4);
 		v[0] = (1 + tau) * 0.5;
 		v[1] = v[2] = v[3] = (1 - tau) * 0.5;
@@ -189,9 +175,8 @@ GeneratorList simple_roots(char type, int dim)
                 return give_C(dim);
             else throw new NotImplementedException();
         case 'D':
-            if (dim > 4) give_D(dim);
-			else if ( dim > 0 ) give_A(dim);
-            	else throw new NotImplementedException();
+            if (dim > 0) give_D(dim);
+            else throw new NotImplementedException();
         case 'E':
             if (dim == 6)
                 return give_E(dim);
@@ -222,14 +207,16 @@ GeneratorList simple_roots(char type, int dim)
 Orbit orbit(const GeneratorList& generators, const VectorType& v )
 {
     Orbit orb;
-    GeneratorList newPoints {v};
+    Orbit newPoints {v};
+    Orbit::iterator it = newPoints.begin();
+    VectorType vec;
     while (newPoints.empty() == false ){
-        VectorType vec = newPoints.back();
-        newPoints.pop_back();
+        it = newPoints.begin();
+        vec = *it;
+        newPoints.erase(it);
         if ( std::get<1>(orb.insert(vec)) ){
-            //std::cout << vec << '\n';
             for (int i = 0 ; i < generators.size() ; i++)
-                newPoints.push_back( vec.mirror(generators[i]) );
+                newPoints.insert( vec.mirror(generators[i]) );
         } // endif
     } // endwhile
     return orb;

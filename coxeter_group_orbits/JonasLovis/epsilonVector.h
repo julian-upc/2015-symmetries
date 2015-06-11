@@ -12,7 +12,7 @@
 #include <vector>
 #include <math.h>
 
-const static double epsilon = 0.0001;
+const static double epsilon = 0.001;
 
 typedef double E;
 
