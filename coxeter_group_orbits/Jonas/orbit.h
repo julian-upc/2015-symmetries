@@ -26,16 +26,11 @@ class NotImplementedException : public std::exception {};
 
 
 // PI for cosine function & Radius,eps to compare points in Orbit
-const static double PI = 3.14159265;
-
 typedef double NumberType;
 typedef EpsilonVector VectorType;
 typedef std::vector<VectorType> GeneratorList;
 typedef std::set<VectorType> Orbit;
 typedef GeneratorList MatrixType;
-
-// Global orbit
-Orbit orb;
 
 GeneratorList give_A(int dim)
 {
@@ -103,7 +98,7 @@ GeneratorList give_G()
 GeneratorList give_I(int dim)
 {
     GeneratorList list {{1., 0.},{0.,1.}};
-    double cosine = cos(PI/dim);
+    double cosine = cos(M_PI/dim);
     list[1][0]= cosine/sqrt(1.0-pow(cosine, 2));
     return list;
 }
@@ -153,33 +148,22 @@ GeneratorList simple_roots(char type, int dim)
     }
 }
 
-NumberType scalarProduct(VectorType a, VectorType b)
-{
-    NumberType c = 0;
-    for ( int i = 0; i < a.size(); i++)
-        c += a[i] * b[i];
-    return c;
-}
+void reorbit(const GeneratorList& generators, const VectorType& v );
 
-void reorbit(const GeneratorList& generators, const VectorType& v);
-
-Orbit orbit(const GeneratorList& generators, const VectorType& v)
+Orbit orbit(const GeneratorList& generators, const VectorType& v )
 {
-    orb.clear();
-    reorbit(generators,v);
+    Orbit orb;
+    GeneratorList newPoints {v};
+    while (newPoints.empty() == false ){
+        VectorType vec = newPoints.back();
+        newPoints.pop_back();
+        if ( std::get<1>(orb.insert(vec)) ){
+            //std::cout << vec << '\n';
+            for (int i = 0 ; i < generators.size() ; i++)
+                newPoints.push_back( vec.mirror(generators[i]) );
+        } // endif
+    } // endwhile
     return orb;
-}
-
-void reorbit(const GeneratorList& generators, const VectorType& v)
-{
-    for (int i = 0; i<generators.size() ; i++) {
-        VectorType mirror_v = v.mirror(generators[i]);
-        if ( orb.find(mirror_v) == orb.end() ){
-            //std::cout << "Orb Size: " << orb.size() << '\n';
-            orb.insert(mirror_v);
-            reorbit(generators, mirror_v);
-        }
-    }
 }
 
 #endif // __ORBIT_H_
