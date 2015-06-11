@@ -70,9 +70,10 @@ GeneratorList give_C(int dim)
 
 GeneratorList give_D(int dim)
 {
-	VectorType v(dim);
+    VectorType v(dim);
 	v[dim - 2] = v[dim - 1] = 1;
 	GeneratorList list = give_A(dim - 1);
+    std::cout << list.back() << '\n';
 	list.push_back(v);
 	return list;
 }
@@ -163,38 +164,28 @@ GeneratorList simple_roots(char type, int dim)
 {
     switch(type) {
         case 'A':
-            if (dim > 0)
-                return give_A(dim);
+            if (dim > 0) return give_A(dim);
             else throw new NotImplementedException();
         case 'B':
-            if (dim > 0)
-                return give_B(dim);
+            if (dim > 0) return give_B(dim);
             else throw new NotImplementedException();
         case 'C':
-            if (dim > 0)
-                return give_C(dim);
+            if (dim > 0) return give_C(dim);
             else throw new NotImplementedException();
         case 'D':
-            if (dim > 0) give_D(dim);
+            if (dim > 0) return give_D(dim);
             else throw new NotImplementedException();
         case 'E':
-            if (dim == 6)
-                return give_E(dim);
-            else if (dim == 7)
-                return give_E(dim);
-            else if (dim == 8)
-                return give_E(dim);
+            if (dim < 9 || dim > 5 ) return give_E(dim);
             else throw new NotImplementedException();
         case 'F':
             if (dim == 4) return give_F();
-            throw new NotImplementedException();
+            else throw new NotImplementedException();
         case 'G':
             if (dim == 2) return give_G();
-            throw new NotImplementedException();
+            else throw new NotImplementedException();
         case 'H':
-            if (dim == 2) throw new NotImplementedException();
-            if (dim == 3) throw new NotImplementedException();
-            if (dim == 4) throw new NotImplementedException();
+            if ( dim < 5 || dim > 2 ) return give_H(dim);
             else throw new NotImplementedException();
         case 'I':
             if (dim < 1) throw new NotImplementedException();
