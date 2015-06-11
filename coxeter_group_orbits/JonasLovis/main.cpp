@@ -34,9 +34,11 @@ int main(int argc, const char * argv[]) {
                 vec[j] = (i*j+0.7)*pow(-1, j);
             }
             vec.push_back(0.2);
+            NumberType should = 1;
+            for ( int j = 1 ; j <= i ; j++ )
+                should *= j;
+            std::cout << "max orbit: n+1! = " << should <<'\n';
         }
-        
-        std::cout << "Vector: " << vec << '\n';
         if ( letter == 'B' )
         {
             NumberType should = pow(2,i);
@@ -44,6 +46,7 @@ int main(int argc, const char * argv[]) {
                 should *= j;
             std::cout << "max orbit: 2^n*n! = " << should <<'\n';
         }
+        std::cout << "Vector: " << vec << '\n';
         Orbit orb = orbit(list, vec);
         /*
         Orbit::iterator it;
@@ -52,9 +55,7 @@ int main(int argc, const char * argv[]) {
             std::cout << *it << '\n';
         }
         */
-        
         std::cout << "Orbit Size: " << orb.size() << '\n';
         //  std::cout << orb.setRepresentation();
-    }
     return 0;
     }
