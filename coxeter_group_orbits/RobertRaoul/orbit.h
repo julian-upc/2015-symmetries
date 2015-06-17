@@ -29,13 +29,25 @@
 #include <vector>
 #include <set>
 #include <math.h>
+#include <sys/time.h>
+
+typedef unsigned long long timestamp_t;
+static timestamp_t
+get_timestamp (){
+    struct timeval now;
+    gettimeofday (&now, NULL);
+    return now.tv_usec + (timestamp_t)now.tv_sec * 1000000;
+}
+
+
+
 
 class NotImplementedException : public std::exception {};
 
 
 typedef double E;
 
-const static E epsilon = 0.001;
+const static E epsilon = 0.0001;
 
 class coxeterVector : public std::vector<E>{
     
@@ -50,16 +62,37 @@ public:
     : std::vector<E>(init) {}
     
     
-    bool operator==(const coxeterVector& rhs) const {
-        E sum =0;
+
+    bool operator==(const coxeterVector& rhs) const
+    {
         coxeterVector a(*this);
-        for (int i =0; i < rhs.size(); i++) {
-            a[i] -= rhs[i];
-            sum += a[i]*a[i];
+        for ( int i = 0; i < rhs.size() ; i++) {
+            if ( a[i] <  rhs[i] - epsilon  ||  a[i] > rhs[i] + epsilon )
+                return false;
         }
-        return (sum < epsilon);
-        
+        return true;
     }
+    
+    bool operator < (const coxeterVector& rhs) const
+    {
+        for ( int i = 0; i < rhs.size() ; i++) {
+            if ( this->at(i) < rhs[i] - epsilon ) {
+                return true;
+            } else {
+                if ( this->at(i) > rhs[i] + epsilon )
+                    return false;
+            }
+        }
+        return false;
+    }
+    
+    friend std::ostream& operator << (std::ostream& os, const coxeterVector& v)
+    {
+        for (const auto& x : v)
+            os << x << " ";
+        return os;
+    }
+
     
     
 };
@@ -130,41 +163,134 @@ GeneratorList createMatrixA(int dim){
     return Matrix;
 }
 
-GeneratorList createMatrixEsix(){
-    GeneratorList Matrix = {
-        {1.,-1.,0.,0.,0.,0.},
-        {0.,1.,-1.,0.,0.,0.},
-        {0.,0.,1.,-1.,0.,0.},
-        {0.,0.,0.,1.,1.,0.},
-        {-.5,-.5,-.5,-.5,-.5,sqrt(3)/2},
-        {0.,0.,0.,1.,-1.,0.},
+GeneratorList createMatrixE(int dim)
+{
+    GeneratorList Matrix;
+    for ( int i = 0 ; i < dim-2 ; i++ ) {
+        VectorType vec(dim);
+        vec[i]=1;
+        vec[i+1]=-1;
+        Matrix.push_back(vec);
+    }
+    if (dim == 6)
+        Matrix.push_back({-0.5,-0.5,-0.5,-0.5,-0.5,sqrt(3)/2.});
+    if (dim ==  7)
+        Matrix.push_back({-0.5,-0.5,-0.5,-0.5,-0.5,-0.5,sqrt(2)/2.});
+    if (dim == 8)
+        Matrix.push_back({-0.5,-0.5,-0.5,-0.5,-0.5,-0.5,-0.5,-0.5});
+    VectorType vec1 (dim); vec1[dim-3] = 1; vec1[dim-2] = 1;
+    Matrix.push_back(vec1);
+    return Matrix;
+}
+
+
+GeneratorList createMatrixF(){
+    GeneratorList Matrix={  {0.5,-0.5,-0.5,-0.5} ,
+                            {0.,1.,-1.,0.},
+                            {0.,0.,1.,-1.},
+                            {0.,0.,0.,1.}
+                         };
+    return Matrix;
+}
+
+GeneratorList createMatrixG(){
+    GeneratorList Matrix= {  {0.,1.,-1.},
+                            {1.,-2.,1.} };
+    return Matrix;
+}
+
+GeneratorList createMatrixI(int dim)
+{
+    GeneratorList Matrix {{1., 0.},{0.,1.}};
+    double cosine = cos(M_PI/dim);
+    Matrix[1][0]= cosine/sqrt(1.0-pow(cosine, 2));
+    return Matrix;
+}
+
+GeneratorList createMatrixD(){
+    GeneratorList Matrix ={
+        {1.,-1.,0.,0.},
+        {0.,1.,-1.,0.},
+        {0.,0.,1.,-1.},
+        {0.,0.,1.,1.}
     };
     return Matrix;
 }
 
 
-
 GeneratorList simple_roots(char type, int dim)
 {
     switch(type) {
-        case 'B':
-            return createMatrixB(dim);
         case 'A':
-            return createMatrixA(dim);
-            
+            if (dim > 0)
+                return createMatrixA(dim);
+            else throw new NotImplementedException();
+        case 'B':
+            if (dim > 0)
+                return createMatrixB(dim);
+            else throw new NotImplementedException();
+        case 'C':
+            if (dim > 0)
+                return createMatrixB(dim);
+            else throw new NotImplementedException();
+        case 'D':
+            if (dim > 4) throw new NotImplementedException();
+            else throw new NotImplementedException();
+        case 'E':
+            if (dim == 6)
+                return createMatrixE(dim);
+            else if (dim == 7)
+                return createMatrixE(dim);
+            else if (dim == 8)
+                return createMatrixE(dim);
+            else throw new NotImplementedException();
+        case 'F':
+            if (dim == 4) return createMatrixF();
+            throw new NotImplementedException();
+        case 'G':
+            if (dim == 2) return createMatrixG();
+            throw new NotImplementedException();
+        case 'H':
+            if (dim == 2) throw new NotImplementedException();
+            if (dim == 3) throw new NotImplementedException();
+            if (dim == 4) throw new NotImplementedException();
+            else throw new NotImplementedException();
+        case 'I':
+            if (dim < 1) throw new NotImplementedException();
+            else return createMatrixI(dim);
         default:
             throw new NotImplementedException();
     }
 }
 
-void recursion(const GeneratorList& generators, VectorType v, int counter){
+
+Orbit orbit(const GeneratorList& generators, const VectorType& v )
+{
+    Orbit orb;
+    Orbit tmpPoints {v};
+    while (tmpPoints.empty() == false ){
+        Orbit::iterator it = tmpPoints.begin();
+        VectorType vec = *it;
+        tmpPoints.erase(it);
+        if ( std::get<1>(orb.insert(vec)) ){
+            //std::cout << vec << '\n';
+            for (int i = 0 ; i < generators.size() ; i++)
+                tmpPoints.insert(reflection(generators[i], vec));
+        } // endif
+    } // endwhile
+    return orb;
+}
+
+
+
+/*void recursion(const GeneratorList& generators, VectorType v, int counter){
     for(int i = 0; i < generators.size(); i++){
-        std:: cout << i << std::endl;
+        //std:: cout << i << std::endl;
         if (orbitSet.find(reflection(generators[i], v)) == orbitSet.end()) { //orbitSet contains reflection(generators[i], v)
             orbitSet.insert(reflection(generators[i], v));
             
             counter += 1;
-            std::cout << "counter " << counter << std::endl;
+            //std::cout << "counter " << counter << std::endl;
             recursion(generators, reflection(generators[i], v), counter);
         }
     }
@@ -176,7 +302,7 @@ Orbit orbit(const GeneratorList& generators, const VectorType& v)
     orbitSet.insert(v);
     recursion(generators,v,0);
     return orbitSet;
-}
+}*/
 
 
 #endif // __ORBIT_H_
