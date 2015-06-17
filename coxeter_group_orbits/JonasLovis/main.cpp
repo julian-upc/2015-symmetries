@@ -11,10 +11,10 @@
 #include "orbit.h"
 #include <math.h>
 
-const static char letter = 'H';
+const static char letter = 'E';
 
 int main(int argc, const char * argv[]) {
-    for (int i =  2; i < 5; i++){
+    for (int i =  8; i < 9; i++){
         VectorType vec (i);
         for ( int j = 0 ; j < i ; j++){
             vec[j] = (i*j+0.7)*pow(-1, j);

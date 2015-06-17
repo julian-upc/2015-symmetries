@@ -21,6 +21,7 @@
 #include <sstream>
 #include <string>
 #include "epsilonVector.h"
+#include <ctime>
 
 class NotImplementedException : public std::exception {};
 
@@ -197,19 +198,30 @@ GeneratorList simple_roots(char type, int dim)
 
 Orbit orbit(const GeneratorList& generators, const VectorType& v )
 {
+    int counter = 0;
+    clock_t start = clock();
     Orbit orb;
-    Orbit newPoints {v};
-    Orbit::iterator it = newPoints.begin();
+    GeneratorList newPoints {v};
     VectorType vec;
-    while (newPoints.empty() == false ){
-        it = newPoints.begin();
-        vec = *it;
-        newPoints.erase(it);
+    while (!newPoints.empty()){
+        vec = newPoints.back();
+        newPoints.pop_back();
         if ( std::get<1>(orb.insert(vec)) ){
+            counter += 1;
+            if ( counter == 2000000){
+                clock_t middle = clock();
+                counter = 0;
+                double time3 = double(middle-start)/(CLOCKS_PER_SEC*60);
+                std::cout << "Wir sind bei " << orb.size() << " nach " << time3 << " Minuten." << '\n';
+            }
             for (int i = 0 ; i < generators.size() ; i++)
-                newPoints.insert( vec.mirror(generators[i]) );
+                newPoints.push_back( vec.mirror(generators[i]) );
         } // endif
     } // endwhile
+    clock_t end = clock();
+    double time1 = double(end-start)/CLOCKS_PER_SEC;
+    double time2 = double(end-start)/(CLOCKS_PER_SEC*60);
+    std::cout << "Time secs: " << time1 << " Time mins: " << time2 << '\n';
     return orb;
 }
 

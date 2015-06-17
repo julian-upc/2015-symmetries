@@ -24,7 +24,7 @@ private:
     {
         E c = 0;
         for ( int i = 0; i < b.size(); i++)
-            c += this->at(i) * b[i];
+            c += this->operator[](i) * b[i];
         return c;
     }
     
@@ -42,7 +42,7 @@ public:
     : std::vector<E>(init)
     {}
     
-    EpsilonVector mirror(EpsilonVector normal) const
+    EpsilonVector mirror(const EpsilonVector& normal) const
     {
         double scalar = normal.scalarProduct(normal);
         long s = this->size();
@@ -71,10 +71,10 @@ public:
     bool operator < (const EpsilonVector& rhs) const
     {
         for ( int i = 0; i < rhs.size() ; i++) {
-            if ( this->at(i) < rhs[i] - epsilon ) {
+            if ( (*this)[i] < rhs[i] - epsilon ) {
                 return true;
             } else {
-                if ( this->at(i) > rhs[i] + epsilon )
+                if ( (*this)[i] > rhs[i] + epsilon )
                     return false;
             }
         }
