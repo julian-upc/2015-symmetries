@@ -44,12 +44,13 @@ public:
     
     EpsilonVector mirror(const EpsilonVector& normal) const
     {
+        double scalar = normal.scalarProduct(normal);
         EpsilonVector mir (this->size());
         for ( int i = 0; i < this->size(); i++){
             for( int j = 0; j < this->size(); j++){
                 mir[i] += normal[i]*normal[j]*this->operator[](j);
             }
-            mir[i] *= (-2)/(normal.scalarProduct(normal));
+            mir[i] *= (-2)/(scalar);
             mir[i] += this->operator[](i);
         }
         return mir;
@@ -65,6 +66,7 @@ public:
         return true;
     }
     
+    // Comparison operator to be used by our Orbit.
     bool operator < (const EpsilonVector& rhs) const
     {
         for ( int i = 0; i < rhs.size() ; i++) {

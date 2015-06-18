@@ -11,10 +11,10 @@
 #include "orbit.h"
 #include <math.h>
 
-const static char letter = 'F';
+const static char letter = 'B';
 
 int main(int argc, const char * argv[]) {
-    for (int i =  4; i < 5; i++){
+    for (int i =  8; i < 9; i++){
         VectorType vec (i);
         if ( letter != 'I' && letter != 'F' ){
             for ( int j = 0 ; j < i ; j++){
