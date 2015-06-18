@@ -29,10 +29,10 @@ string printVector(VectorType v){
 int main(){
     
     
- 
-    VectorType v = {0., 0., 0., 0., 0., 0., 0., 0.};
     
-    GeneratorList B2 = createMatrixE(8);
+    VectorType v = {/*0.3, -0.123, 17.9, 42.3,*/0., 0., 0., 0.};
+    
+    GeneratorList B2 = createMatrixH4();
     for (int i = 0; i < B2.size(); i++){
         cout << printVector(B2[i]) << endl;
     }
@@ -43,14 +43,14 @@ int main(){
     Orbit solution = orbit(B2, v);
     
     timestamp_t t1 = get_timestamp();
-
+    
     cout << "size: " << solution.size() << endl;
     cout << "time: " << (t1 - t0) / 1000000.0L << "secs" << endl;
     cout << "time: " << (t1 - t0) / 60000000.0L << "mins" << endl;
     
-   // for(auto s : solution){
-     //   cout << printVector(s) << endl;
-   // }
+    // for(auto s : solution){
+    //   cout << printVector(s) << endl;
+    // }
     
     /*
      VectorType normal = { 16, -1, -0.5};

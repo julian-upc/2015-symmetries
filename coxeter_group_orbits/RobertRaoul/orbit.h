@@ -207,15 +207,41 @@ GeneratorList createMatrixI(int dim)
     return Matrix;
 }
 
-GeneratorList createMatrixD(){
-    GeneratorList Matrix ={
-        {1.,-1.,0.,0.},
-        {0.,1.,-1.,0.},
-        {0.,0.,1.,-1.},
-        {0.,0.,1.,1.}
-    };
+GeneratorList createMatrixD(int dim)
+    {
+        VectorType v(dim);
+        v[dim - 2] = v[dim - 1] = 1;
+        GeneratorList list = createMatrixA(dim - 1);
+        std::cout << list.back() << '\n';
+        list.push_back(v);
+        return list;
+    }
+
+
+GeneratorList createMatrixH3()
+{
+    const NumberType tau(0.5 + 0.5 * sqrt(5));
+    GeneratorList Matrix = {{2., 0., 0.},
+                            {-tau, 1./tau , -1.},
+                            {0., 0., 2.}};
     return Matrix;
 }
+
+
+
+GeneratorList createMatrixH4()
+{
+    const NumberType tau(0.5 + 0.5 * sqrt(5));
+    std::cout << "bl2" << std::endl;
+    GeneratorList Matrix = {{tau, 1./tau,  1./tau,  1./tau},
+        {-1.,  1.,  0.,  0.},
+        {0., -1.,  1.,  0.},
+        {0.,  0., -1.,  1.}};
+    return Matrix;
+    
+}
+
+
 
 
 GeneratorList simple_roots(char type, int dim)
