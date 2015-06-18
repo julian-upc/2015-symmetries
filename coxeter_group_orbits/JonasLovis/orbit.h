@@ -100,10 +100,10 @@ GeneratorList give_E(int dim)
 }
 
 GeneratorList give_F(){
-    GeneratorList list={  {0.5,-0.5,-0.5,-0.5} ,
-                            {0.,1.,-1.,0.},
+    GeneratorList list={    {0.,1.,-1.,0.},
                             {0.,0.,1.,-1.},
-                            {0.,0.,0.,1.}
+                            {0.,0.,0.,1.},
+                            {0.5,-0.5,-0.5,-0.5}
                         };
     return list;
 }
@@ -198,30 +198,37 @@ GeneratorList simple_roots(char type, int dim)
 
 Orbit orbit(const GeneratorList& generators, const VectorType& v )
 {
+    //Counting stuff
     int counter = 0;
-    clock_t start = clock();
+    time_t start = time(NULL);
+    //endcount
     Orbit orb;
     GeneratorList newPoints {v};
-    VectorType vec;
+    int n = generators.size();
     while (!newPoints.empty()){
-        vec = newPoints.back();
+        VectorType vec = newPoints.back();
         newPoints.pop_back();
         if ( std::get<1>(orb.insert(vec)) ){
+            //Counting Stuff
             counter += 1;
             if ( counter == 2000000){
-                clock_t middle = clock();
+                time_t middle = time(NULL);
                 counter = 0;
-                double time3 = double(middle-start)/(CLOCKS_PER_SEC*60);
+                double time3 = double(middle-start)/60;
                 std::cout << "Wir sind bei " << orb.size() << " nach " << time3 << " Minuten." << '\n';
             }
-            for (int i = 0 ; i < generators.size() ; i++)
+            //Endcount
+            for (int i = 0 ; i < n ; i++){
                 newPoints.push_back( vec.mirror(generators[i]) );
+            }
         } // endif
     } // endwhile
-    clock_t end = clock();
-    double time1 = double(end-start)/CLOCKS_PER_SEC;
-    double time2 = double(end-start)/(CLOCKS_PER_SEC*60);
+    //Counting...
+    time_t end = time(NULL);
+    double time1 = double(end-start);
+    double time2 = double(end-start)/60;
     std::cout << "Time secs: " << time1 << " Time mins: " << time2 << '\n';
+    //Endcount
     return orb;
 }
 
