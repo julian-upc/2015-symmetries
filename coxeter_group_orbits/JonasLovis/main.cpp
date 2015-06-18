@@ -11,13 +11,20 @@
 #include "orbit.h"
 #include <math.h>
 
-const static char letter = 'E';
+const static char letter = 'F';
 
 int main(int argc, const char * argv[]) {
-    for (int i =  8; i < 9; i++){
+    for (int i =  4; i < 5; i++){
         VectorType vec (i);
-        for ( int j = 0 ; j < i ; j++){
-            vec[j] = (i*j+0.7)*pow(-1, j);
+        if ( letter != 'I' && letter != 'F' ){
+            for ( int j = 0 ; j < i ; j++){
+                vec[j] = (i*j+0.7)*pow(-1, j);
+            }
+        }else{
+            if (letter == 'I')
+                vec = {0.4231 , -17.33312 };
+            else
+                vec = {0.4231 , -17.33312 , 89.23 , -200.02};
         }
         GeneratorList list = simple_roots(letter, i);
         std::cout << "Generator Size: " << list.size() << '\n';

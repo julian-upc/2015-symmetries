@@ -12,7 +12,7 @@
 #include <vector>
 #include <math.h>
 
-const static double epsilon = 0.001;
+const static double epsilon = 0.0000001;
 
 typedef double E;
 
@@ -44,16 +44,13 @@ public:
     
     EpsilonVector mirror(const EpsilonVector& normal) const
     {
-        double scalar = normal.scalarProduct(normal);
-        long s = this->size();
-        std::vector<std::vector<double>> matrix ( s , EpsilonVector(s) );
-        EpsilonVector mir (s);
-        for ( int i = 0; i < s; i++){
-            matrix[i][i] += 1;
-            for( int j = 0; j < s; j++){
-                matrix[i][j] += (-2)*normal[i]*normal[j]/scalar;
-                mir[i] += matrix[i][j]*this->at(j);
+        EpsilonVector mir (this->size());
+        for ( int i = 0; i < this->size(); i++){
+            for( int j = 0; j < this->size(); j++){
+                mir[i] += normal[i]*normal[j]*this->operator[](j);
             }
+            mir[i] *= (-2)/(normal.scalarProduct(normal));
+            mir[i] += this->operator[](i);
         }
         return mir;
     }
