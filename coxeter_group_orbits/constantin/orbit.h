@@ -75,11 +75,11 @@
 
 struct Error_radius_comp {
 //     const long double error_radius;
-    const long double error_radius = 0.0001;
+    const long double error_radius = 0.00001;
 //     Error_radius_comp(/*long double eps*/); /*: error_radius(eps) {}*/  
     bool operator() (const VectorType& lhs, const VectorType& rhs) const { 
 	for (size_t i=0; i<lhs.size(); ++i) {
-	    if (abs(lhs[i]-rhs[i])> error_radius) {
+	    if (lhs[i]-rhs[i] > error_radius || rhs[i]-lhs[i] > error_radius) {
 		return lhs < rhs;
 	    }
 	}
@@ -106,9 +106,23 @@ std::set<VectorType, Error_radius_comp> orbit(const GeneratorList& generators, c
 	std::transform(generators[i].begin(), generators[i].end(), scaled_generators[i].begin(), std::bind1st(std::multiplies<NumberType>(),2/ip));	//type sensitive operation
     }    
     
-    size_t wordlength = 0;
+//     for (size_t i=0; i<generators.size(); ++i) {
+// 	std::cout << "gen " << i << " = [ ";
+// 	for (size_t j=0; j<generators[i].size(); ++j) {
+// 	    std::cout << generators(i,j) << " "; 
+// 	}
+// 	NumberType ip = 0;
+// 	ip = std::inner_product(generators[i].begin(),generators[i].end(),generators[i].begin(), ip);
+// 	std::cout << "] - " << 2/ip << " -> [ ";
+// 	for (size_t j=0; j<scaled_generators[i].size(); ++j) {
+// 	    std::cout << scaled_generators(i,j) << " "; 
+// 	}
+// 	std::cout << "]" << std::endl;
+//     }
+    
+//     size_t wordlength = 0;
     do {
-	++wordlength;
+// 	++wordlength;
 	for (auto iter=(*currPoints).begin(); iter!=(*currPoints).end(); iter = (*currPoints).erase(iter)) {
 	    for (size_t i=0; i<generators.size(); ++i) {
 		std::vector<long double> newPoint((*iter).size());
