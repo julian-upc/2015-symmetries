@@ -27,6 +27,7 @@
 #include <cmath>
 #include <boost/lexical_cast.hpp>
 
+
 class NotImplementedException : public std::exception {};
 class InvalidInputException : public std::logic_error {
 public:
@@ -39,35 +40,56 @@ public:
   InvalidGeneratorException(const std::string& s):std::logic_error(s) {};
 };
 
-const static double epsilon = 0.00001; 
+//const static double epsilon = 1e-20;
+//const static double epsilon = 0;
+const static double epsilon = 0.00001;
+
 
 template<typename T>
 T relativeError(const std::vector<T>& x, const std::vector<T>& y)
 {
   if (x.size() != y.size())
   {
+    std::cout << x.size();
+    std::cout << "\n different \n";
+    std::cout << y.size();
     throw std::logic_error("Comparison between vectors of different size.");
   }
   std::vector<T> diff(x.size());
-  for (std::size_t i=0;i < x.size();++i)
-  {
-    diff[i] = x[i]-y[i];
-  }
   T maxDiff = 0.0;
   T maxVal = 0.0;
   for (std::size_t i=0;i < x.size();++i)
   {
-    if (std::fabs(diff[i]) >std::fabs(maxDiff))
+    diff[i] = x[i] - y[i];
+    if (std::fabs(diff[i]) > maxDiff)
     {
       maxDiff = std::fabs(diff[i]);
     }
-    if (std::fabs(x[i]) > std::fabs(maxVal))
+    if (std::fabs(x[i]) > maxVal)
     {
       maxVal = std::fabs(x[i]);
     }
   }
+  // for (std::size_t i=0;i < x.size();++i)
+  // {
+  //   diff[i] = std::fabs(x[i])-std::fabs(y[i]);
+  // }
+  // T maxDiff = 0.0;
+  // T maxVal = 0.0;
+  // for (std::size_t i=0;i < x.size();++i)
+  // {
+  //   if (std::fabs(diff[i]) > std::fabs(maxDiff))
+  //   {
+  //     maxDiff = std::fabs(diff[i]);
+  //   }
+  //   if (std::fabs(x[i]) > std::fabs(maxVal))
+  //   {
+  //     maxVal = std::fabs(x[i]);
+  //   }
+  // }
   if (maxVal == 0.0)
   {
+    //std::cout << "maximum Value was 0.\n";
     return maxDiff;
   }
   return maxDiff/maxVal;
@@ -79,8 +101,12 @@ struct ImpreciseComp{
   {
     if (relativeError(x,y) < epsilon)
     {
+      //std::cout << "decided two vectors are not <, due to relativeError.\n";
+      //std::cout << relativeError(x,y);
+      //std::cout << "\n";
       return false;
     }
+    //std::cout << "use normal compare.\n";
     return x < y;
   }
 };
@@ -88,7 +114,8 @@ struct ImpreciseComp{
 typedef double NumberType;  // this probably isn't going to work
 typedef std::vector<NumberType> VectorType;
 typedef std::vector<VectorType> GeneratorList;
-typedef std::set<VectorType, ImpreciseComp<NumberType>> Orbit;
+typedef std::set<VectorType,ImpreciseComp<NumberType>> Orbit;
+//,ImpreciseComp<NumberType>
 
 void out(std::ostream& file,const Orbit& solution, bool outputOrbit);
 
@@ -178,6 +205,80 @@ void generateD(std::size_t dim, GeneratorList& generators)
   }
 }
 
+void generateE6(GeneratorList& generators)
+{
+  VectorType v(6);
+  for (int i=0; i<5; ++i)
+    v[i] = -0.5;
+  v[5] = 0.5 * sqrt(3);
+  generateD(5, generators);
+  for (int i=0; i<5; ++i)
+    generators[i].push_back(0);
+  generators.push_back(v);
+}
+
+void generateE7(GeneratorList& generators)
+{
+  VectorType v(7);
+  for (int i=0; i<6; ++i)
+    v[i] = -0.5;
+  v[6] = 0.5 * sqrt(2);
+  generateD(6, generators);
+  for (int i=0; i<6; ++i)
+    generators[i].push_back(0);
+  generators.push_back(v);
+}
+
+void generateE8(GeneratorList& generators)
+{
+  VectorType v(8);
+  for (int i=0; i<8; ++i)
+    v[i] = -0.5;
+  generateD(7,generators);
+  for (int i=0; i<7; ++i)
+    generators[i].push_back(0);
+  generators.push_back(v);
+}
+
+void generateF4(GeneratorList& generators)
+{
+  generators.resize(4,VectorType(4));
+  generators[0][0] = generators[1][1] = generators[2][2] = 1;
+  generators[0][1] = generators[1][2] = -1;
+  generators[3][0] = generators[3][1] = generators[3][2] = generators[3][3] = -0.5;
+}
+
+void generateG2(GeneratorList& generators)
+{
+  generators.resize(2,VectorType(3));
+  generators[0][0] = 1;
+  generators[0][1] = generators[1][0] = generators[1][2] = -1;
+  generators[1][1] = 2;
+}
+
+void generateH3(GeneratorList& generators)
+{
+  const NumberType tau(0.5 + 0.5 * sqrt(5)); // golden ratio
+  generators.resize(3,VectorType(3));
+  generators[0][0] = generators[2][2] = 2;
+  generators[1][0] = -tau; 
+  generators[1][1] = tau - 1; 
+  generators[1][2] = -1;
+}
+
+void generateH4(GeneratorList& generators)
+{
+  const NumberType tau(0.5 + 0.5 * sqrt(5)); // golden ratio
+  generators.resize(4, VectorType(4));
+  generators[0][0] = (1+tau) * 0.5;
+  generators[0][1] = generators[0][2] = generators[0][3] = (1-tau) * 0.5;
+  for (int i=0; i<3; ++i)
+  {
+    generators[i+1][i] = -1;
+    generators[i+1][i+1] = 1;
+  }
+}
+
 void input(std::string filename, VectorType& point, GeneratorList& generators)
 {
   std::ifstream input( filename );
@@ -204,12 +305,48 @@ void input(std::string filename, VectorType& point, GeneratorList& generators)
         generateD(dim, generators);
         break;
     case 'E':
+        switch(dim) {
+          case 6:
+            generateE6(generators);
+            break;
+          case 7:
+            generateE7(generators);
+            break;
+          case 8:
+            generateE8(generators);
+            break;
+          default:
+            throw InvalidInputException("E with wrong dimension number.");
+        }
+        out(std::cout, Orbit(generators.begin(),generators.end()),true);
         break;
     case 'F':
+        if (dim != 4)
+        {
+          throw InvalidInputException("F with wrong dimension number.");
+        }
+        generateF4(generators);
         break;
     case 'G':
+        if (dim != 2)
+        {
+          throw InvalidInputException("G with wrong dimension number.");
+        }
+        generateG2(generators);
         break;
     case 'H':
+        if( dim != 3 && dim != 4)
+        {
+          throw InvalidInputException("H with wrong dimension number.");
+        }
+        else if(dim == 3)
+        {
+          generateH3(generators);
+        }
+        else
+        {
+          generateH4(generators);
+        }
         break;
     case 'I':
         break;
@@ -312,20 +449,59 @@ void sanityCheck(int orbitSize, std::string filename)
 
 VectorType mirror(const VectorType& v, const VectorType& plane)
 {
-  //mirror v on plane discribed by vector plane
-  double init = 0;
-  double init2 = 0;
+  std::cout << "first entry: ";
+  std::cout << v[0];
+  std::cout << " \n ";
+  std::cout << "now mirror:\n";
+  std::cout << v.size();
+  std::cout << plane.size();
+  std::cout << "v:\n";
+  std::cout << v[0];
+  std::cout << "  ";
+  std::cout << v[1];
+  std::cout << "  ";
+  std::cout << v[2];
+  std::cout << "  ";
+  std::cout << v[3];
+  std::cout << "  ";
+  std::cout << v[4];
+  std::cout << "  ";
+  std::cout << v[5];
+  std::cout << "\n";
+  std::cout << "plane:\n";
+  std::cout << plane[0];
+  std::cout << "  ";
+  std::cout << plane[1];
+  std::cout << "  ";
+  std::cout << plane[2];
+  std::cout << "  ";
+  std::cout << plane[3];
+  std::cout << "  ";
+  std::cout << plane[4];
+  std::cout << "  ";
+  std::cout << plane[5];
+  std::cout << "\n";
+  //mirror v on plane described by vector plane
+  //double init = 0.0;
+  //double init2 = 0.0;
   VectorType help(v.size());
   for (std::size_t i = 0; i<plane.size();++i)
   {
-    help[i] = plane[i]*(2*std::inner_product(v.begin(), v.end(), plane.begin(), init)) /
-      std::inner_product(plane.begin(), plane.end(), plane.begin(), init2);
+    std::cout << "normal vector: ";
+    std::cout << std::inner_product(v.begin(), v.end(), plane.begin(), 0.0);
+    help[i] = plane[i]*(2.0*std::inner_product(v.begin(), v.end(), plane.begin(), 0.0)) /
+      std::inner_product(plane.begin(), plane.end(), plane.begin(), 0.0);
+    std::cout << "\nhelp vector for i: ";
+    std::cout << help[i];
+    std::cout << "\n";
   }
   VectorType newPoint(v.size());
   for(std::size_t i = 0; i<v.size();++i)
   {
     newPoint[i] = v[i] - help[i];
   }
+  std::cout << "\ndone:\n";
+  std::cout << newPoint.size();
   return newPoint;
 }
 
@@ -344,25 +520,82 @@ void recorbit(const GeneratorList& generators, const VectorType& v, Orbit& histo
   return;
 }
 
+//template <class T1, class T2> struct pair;
+
 void iterorbit(const GeneratorList& generators, const VectorType& v, Orbit& history)
 {
-  std::set<VectorType, ImpreciseComp<NumberType>> unmirroredPoints = {v};
+  std::set<VectorType,ImpreciseComp<NumberType>> unmirroredPoints = {v};
+  //history = {v};
+  //, ImpreciseComp<NumberType>
   while(!unmirroredPoints.empty())
   {
-    // std::set<VectorType>::iterator it = unmirroredPoints.begin();
-    // currentPoint = *it;
-    const VectorType& currentPoint(*(unmirroredPoints.begin()));
-    history.insert(currentPoint);
+    std::set<VectorType>::iterator it = unmirroredPoints.begin();
+    const VectorType& currentPoint = *it;
+    //const VectorType& currentPoint(*(unmirroredPoints.begin()));
+    std::pair<std::set<VectorType,ImpreciseComp<NumberType>>::iterator, bool> p = history.insert(currentPoint);
+    std::cout << p.second;
+    std::cout << "\n";
+    std::cout << currentPoint[0];
+    std::cout << "  ";
+    // std::cout << currentPoint[1];
+    // std::cout << "  ";
+    // std::cout << currentPoint[2];
+    // std::cout << "  ";
+    // std::cout << currentPoint[3];
+    // std::cout << "  ";
+    // std::cout << currentPoint[4];
+    // std::cout << "  ";
+    // std::cout << currentPoint[5];
+    // std::cout << "\n";
+    unmirroredPoints.erase(it);
+    std::cout << "\n";
+    std::cout << currentPoint[0];
+    std::cout << "  ";
+    std::cout << "before mirroring\n";
+    out(std::cout, history, true);
     for(const auto& plane : generators)
     {
+      std::cout << "first entry: ";
+      std::cout << currentPoint[0];
+      std::cout << " \n ";
       VectorType mirroredPoint = mirror(currentPoint,plane);
       //mirroredPoint = mirror(currentPoint,plane);
+      // if(history.find({-2,  7,  4.69615,  0,  1,  -3.86603}) == history.end())
+      // {
+      //   std::cout << "not in";
+      // }
+      std::cout << plane[0];
+      std::cout << "  ";
+      std::cout << plane[1];
+      std::cout << "  ";
+      std::cout << plane[2];
+      std::cout << "  ";
+      std::cout << plane[3];
+      std::cout << "  ";
+      std::cout << plane[4];
+      std::cout << "  ";
+      std::cout << plane[5];
+      std::cout << "\n";
       if(history.find(mirroredPoint) == history.end())
       {
         unmirroredPoints.insert(mirroredPoint);
       }
+      // else{
+      //   std::cout << "found";
+      // }
     }
-    unmirroredPoints.erase(currentPoint);
+    std::cout << "after mirroring\n";
+    out(std::cout, history, true);
+    // std::cout << history.size();
+    // //out(std::cout, history, true);
+    // std::cout << "\n";
+    // std::cout << "ToDo:\n";
+    // // out(std::cout, unmirroredPoints, true);
+    // std::cout << unmirroredPoints.size();
+    // std::cout << "\n";
+    // unmirroredPoints.erase(it);
+    // std::cout << i;
+    // std::cout << "\n";
   }
   return;
 }
