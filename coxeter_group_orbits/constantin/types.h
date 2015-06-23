@@ -22,10 +22,12 @@
 
 class NotImplementedException : public std::exception {};
 class InvalidGroupException : public std::exception {};
+class DimensionMismatchException : public std::exception {};
+
 
 typedef long double NumberType;  // this might work
 typedef std::vector<NumberType> VectorType;
-typedef std::set<VectorType> Orbit;
+// typedef std::set<VectorType> Orbit;
 
 class GeneratorList : public std::vector<VectorType> {
 public:

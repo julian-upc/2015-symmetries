@@ -67,7 +67,6 @@ int main()
 	//    euclidLength += std::pow(normals[i][j],2);
 	//}
 	euclidLength = std::inner_product(normals[i].begin(), normals[i].end(), normals[i].begin(), euclidLength); //return type equals the type of the start value
-	test = euclidLength;
 	euclidLength = std::sqrt(euclidLength);
 	for (int j=0; j<normals[i].size(); ++j) {
 	    normals[i][j] = normals[i][j] / euclidLength;

@@ -22,7 +22,6 @@
 #include <sstream>
 #include "types.h"
 
-
 GeneratorList simple_roots_type_A (const int n)
 {
    /*
