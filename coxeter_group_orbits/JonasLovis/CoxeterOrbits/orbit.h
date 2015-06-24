@@ -21,6 +21,7 @@ GNU General Public License for more details.
 #include <sstream>
 #include <string>
 #include "epsilonVector.h"
+#include <ctime>
 
 class NotImplementedException : public std::exception {};
 
@@ -32,7 +33,7 @@ typedef std::vector<VectorType> GeneratorList;
 typedef std::set<VectorType> Orbit;
 typedef GeneratorList MatrixType;
 
-GeneratorList give_A(const int dim)
+GeneratorList give_A(int dim)
 {
 	GeneratorList list;
 	for (int i = 0; i < dim; i++) {
@@ -73,6 +74,7 @@ GeneratorList give_D(int dim)
 	VectorType v(dim);
 	v[dim - 2] = v[dim - 1] = 1;
 	GeneratorList list = give_A(dim - 1);
+	std::cout << list.back() << '\n';
 	list.push_back(v);
 	return list;
 }
@@ -86,12 +88,39 @@ GeneratorList give_E(int dim)
 		vec[i + 1] = -1;
 		list.push_back(vec);
 	}
-	if (dim == 6)
-		list.push_back({ -0.5, -0.5, -0.5, -0.5, -0.5, sqrt(3) / 2. });
-	if (dim == 7)
-		list.push_back({ -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, sqrt(2) / 2. });
-	if (dim == 8)
-		list.push_back({ -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5 });
+	if (dim == 6){
+		VectorType vec2(6);
+		vec2[0] = -0.5;
+		vec2[1] = -0.5;
+		vec2[2] = -0.5;
+		vec2[3] = -0.5;
+		vec2[4] = -0.5;
+		vec2[5] = sqrt(3) / 2.;
+		list.push_back(vec2);
+	}
+	if (dim == 7){
+		VectorType vec3(7);
+		vec3[0] = -0.5;
+		vec3[1] = -0.5;
+		vec3[2] = -0.5;
+		vec3[3] = -0.5;
+		vec3[4] = -0.5;
+		vec3[5] = -0.5;
+		vec3[6] = sqrt(2) / 2.;
+		list.push_back(vec3);
+	}
+		if (dim == 8){
+			VectorType vec4(8);
+			vec4[0] = -0.5;
+			vec4[1] = -0.5;
+			vec4[2] = -0.5;
+			vec4[3] = -0.5;
+			vec4[4] = -0.5;
+			vec4[5] = -0.5;
+			vec4[6] = -0.5;
+			vec4[7] = -0.5;
+			list.push_back(vec4);
+		}
 	VectorType vec1(dim); vec1[dim - 3] = 1; vec1[dim - 2] = 1;
 	list.push_back(vec1);
 	return list;
@@ -151,41 +180,41 @@ GeneratorList give_H(int dim){
 	return list;
 }
 
+//GeneratorList give_I(int dim)
+//{
+//	GeneratorList list{ { 1., 0. }, { 0., 1. } };
+//	double cosine = cos(M_PI / dim);
+//	list[1][0] = cosine / sqrt(1.0 - pow(cosine, 2));
+//	return list;
+//}
 
 GeneratorList simple_roots(char type, int dim)
 {
 	switch (type) {
 	case 'A':
-		if (dim > 0)
-			return give_A(dim);
+		if (dim > 0) return give_A(dim);
 		else throw new NotImplementedException();
 	case 'B':
-		if (dim > 0)
-			return give_B(dim);
+		if (dim > 0) return give_B(dim);
 		else throw new NotImplementedException();
 	case 'C':
-		if (dim > 0)
-			return give_C(dim);
+		if (dim > 0) return give_C(dim);
 		else throw new NotImplementedException();
 	case 'D':
 		if (dim > 0) return give_D(dim);
 		else throw new NotImplementedException();
 	case 'E':
-		if (dim == 6)
-			return give_E(dim);
-		else if (dim == 7)
-			return give_E(dim);
-		else if (dim == 8)
-			return give_E(dim);
+		if (dim < 9 || dim > 5) return give_E(dim);
 		else throw new NotImplementedException();
 	case 'F':
 		if (dim == 4) return give_F();
-		throw new NotImplementedException();
+		else throw new NotImplementedException();
 	case 'G':
 		if (dim == 2) return give_G();
-		throw new NotImplementedException();
+		else throw new NotImplementedException();
 	case 'H':
-		return give_H(dim);
+		if (dim < 5 || dim > 2) return give_H(dim);
+		else throw new NotImplementedException();
 	case 'I':
 		throw new NotImplementedException();
 	default:
@@ -196,16 +225,14 @@ GeneratorList simple_roots(char type, int dim)
 Orbit orbit(const GeneratorList& generators, const VectorType& v)
 {
 	Orbit orb;
-	Orbit newPoints{ v };
-	Orbit::iterator it = newPoints.begin();
+	GeneratorList newPoints{ v };
 	VectorType vec;
-	while (newPoints.empty() == false){
-		it = newPoints.begin();
-		vec = *it;
-		newPoints.erase(it);
+	while (!newPoints.empty()){
+		vec = newPoints.back();
+		newPoints.pop_back();
 		if (std::get<1>(orb.insert(vec))){
-			for (int i = 0; i < generators.size(); i++)
-				newPoints.insert(vec.mirror(generators[i]));
+			for (size_t i = 0; i < generators.size(); i++)
+				newPoints.push_back(vec.mirror(generators[i]));
 		} // endif
 	} // endwhile
 	return orb;
