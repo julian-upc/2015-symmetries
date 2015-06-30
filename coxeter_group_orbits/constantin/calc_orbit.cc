@@ -1,3 +1,19 @@
+/* Copyright (c) 2015
+   Constantin Fischer
+   cfischer@mailbox.tu-berlin.de
+
+   This program is free software; you can redistribute it and/or modify it
+   under the terms of the GNU General Public License as published by the
+   Free Software Foundation; either version 3, or (at your option) any
+   later version: http://www.gnu.org/licenses/gpl.txt.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+--------------------------------------------------------------------------------
+*/
+
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -85,8 +101,6 @@ int main(int argc, char *argv[])
 	}
     }
         
-//     try 
-//     {
 	std::set<VectorType, Error_radius_comp> orb = orbit(simple_roots(type,dim),point);
 
 	//generate the output
@@ -104,8 +118,6 @@ int main(int argc, char *argv[])
 	
 	std::cout << "orbit size = " << orb.size() << std::endl;
 	std::cout << "RAM usage = " << getValue()/1000 << "mB" << std::endl;
-//     }
-//     catch(...) {}
     
     return 0;      
 }
