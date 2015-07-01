@@ -11,7 +11,7 @@ int main()
 	//sanityCheck(generatedOrbit.size(),"file.txt");
 	std::ofstream file;
 	file.open ("out.txt");
-	out(file, generatedOrbit, true);
+	out(file, generatedOrbit, false);
 
 }
 
