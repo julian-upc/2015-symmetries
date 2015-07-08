@@ -42,7 +42,7 @@ public:
 };
 
 //const static double epsilon = 1e-20;
-const static long double epsilon = 1e-20;
+const static long double epsilon = 0.0001;
 
 
 // template<typename T>
@@ -110,33 +110,48 @@ const static long double epsilon = 1e-20;
 //   }
 // };
 
-// template<typename T>
-// struct ImpreciseComp{
-//   bool operator()(const std::vector<T>& x, const std::vector<T>& y) const
-//   {
-//     if (x.size() != y.size())
-//     {
-//       std::cout << x.size();
-//       std::cout << "\n different \n";
-//       std::cout << y.size();
-//       throw std::logic_error("Comparison between vectors of different size.");
-//     }
-//     for (std::size_t i=0;i < x.size();++i)
-//     {
-//       if (std::fabs(x[i] - y[i]) > epsilon)
-//       {
-//         return x[i] < y[i];
-//       }
-//     }
-//     return false;
-//   }
-// };
-
+template<typename T>
+struct ImpreciseComp{
+  bool operator()(const std::vector<T>& x, const std::vector<T>& y) const
+  {
+    if (x.size() != y.size())
+    {
+      std::cout << x.size();
+      std::cout << "\n different \n";
+      std::cout << y.size();
+      throw std::logic_error("Comparison between vectors of different size.");
+    }
+    for (std::size_t i=0 ; i < x.size() ; ++i)
+    {
+      if (std::fabs(x[i] - y[i]) > epsilon)
+      {
+        return x[i] < y[i];
+      }
+    }
+    return false;
+  }
+};
 typedef long double NumberType;  // this probably isn't going to work
 typedef std::vector<NumberType> VectorType;
 typedef std::vector<VectorType> GeneratorList;
-typedef std::set<VectorType> Orbit;
+//typedef std::set<VectorType> Orbit;
 //,ImpreciseComp<NumberType>
+
+
+// template<typename T>
+// struct ImpreciseComp{
+//     const NumberType error_radius = 0.00001;
+//     bool operator() (const std::vector<T>& lhs, const std::vector<T>& rhs) const { 
+//     for (size_t i=0; i<lhs.size(); ++i) {
+//       if (fabs(lhs[i]-rhs[i]) > error_radius) {
+//         return lhs[i] < rhs[i];
+//       }
+//     }
+//   return false;
+//   }
+// };
+
+typedef std::set<VectorType,ImpreciseComp<NumberType>> Orbit;
 
 const static NumberType fractional_digits = 1<<6;
 
@@ -564,46 +579,46 @@ void recorbit(const GeneratorList& generators, const VectorType& v, Orbit& histo
 }
 
 //ImpreciseComp-version 
-// void iterorbit(const GeneratorList& generators, const VectorType& v, Orbit& history)
-// {
-//   std::set<VectorType,ImpreciseComp<NumberType>> unmirroredPoints = {v};
-//   std::set<VectorType,ImpreciseComp<NumberType>>::iterator it;
-//   while(!unmirroredPoints.empty())
-//   {
-//     it = unmirroredPoints.begin();
-//     for(const auto& plane : generators)
-//     {
-//       VectorType mirroredPoint = mirror(*it,plane);
-//       if(history.find(mirroredPoint) == history.end())
-//       {
-//         unmirroredPoints.insert(mirroredPoint);
-//       }
-//     }
-//     history.insert(*it);
-//     unmirroredPoints.erase(it);
-//   }
-// }
-
-// Raster-version
 void iterorbit(const GeneratorList& generators, const VectorType& v, Orbit& history)
 {
-  std::set<VectorType> unmirroredPoints = {raster(v)};
-  std::set<VectorType>::iterator it;
+  std::set<VectorType,ImpreciseComp<NumberType>> unmirroredPoints = {v};
+  std::set<VectorType,ImpreciseComp<NumberType>>::iterator it;
   while(!unmirroredPoints.empty())
   {
     it = unmirroredPoints.begin();
     for(const auto& plane : generators)
     {
       VectorType mirroredPoint = mirror(*it,plane);
-      if(history.find(raster(mirroredPoint)) == history.end())
+      if(history.find(mirroredPoint) == history.end())
       {
-        unmirroredPoints.insert(raster(mirroredPoint));
+        unmirroredPoints.insert(mirroredPoint);
       }
     }
-    history.insert(raster(*it));
+    history.insert(*it);
     unmirroredPoints.erase(it);
   }
 }
+
+// Raster-version
+// void iterorbit(const GeneratorList& generators, const VectorType& v, Orbit& history)
+// {
+//   std::set<VectorType> unmirroredPoints = {raster(v)};
+//   std::set<VectorType>::iterator it;
+//   while(!unmirroredPoints.empty())
+//   {
+//     it = unmirroredPoints.begin();
+//     for(const auto& plane : generators)
+//     {
+//       VectorType mirroredPoint = mirror(*it,plane);
+//       if(history.find(raster(mirroredPoint)) == history.end())
+//       {
+//         unmirroredPoints.insert(raster(mirroredPoint));
+//       }
+//     }
+//     history.insert(raster(*it));
+//     unmirroredPoints.erase(it);
+//   }
+// }
 
 // void iterorbit(const GeneratorList& generators, const VectorType& v, Orbit& history)
 // {
