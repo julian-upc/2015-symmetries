@@ -29,6 +29,20 @@ int main()
 	std::ofstream file;
 	file.open ("out.txt");
 	out(file, generatedOrbit, true);
+	// if(qualityCheck(v, generators))
+	// {
+	// 	Orbit generatedOrbit = orbit(generators, v);
+	// 	//sanityCheck(generatedOrbit.size(),"file.txt");
+	// 	std::ofstream file;
+	// 	file.open ("out.txt");
+	// 	out(file, generatedOrbit, true);
+	// }
+	// else
+	// {
+	// 	std::ofstream file;
+	// 	file.open ("out.txt");
+	// 	file << "The used point is too near to one of the generating hyperplanes. Please choose a different point.";
+	// }
 
 }
 

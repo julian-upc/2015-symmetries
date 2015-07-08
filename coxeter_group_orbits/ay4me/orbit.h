@@ -414,6 +414,34 @@ NumberType innerProduct(const VectorType& v1, const VectorType& v2)
   return std::inner_product(v1.begin(),v1.end(),v2.begin(),init);
 }
 
+int power(int n, int e)
+{
+  int p = n;
+  while (e>1)
+  {
+    p = p*n;
+    e = e-1;
+  }
+  return p;
+}
+
+bool qualityCheck(VectorType& v, GeneratorList& generators)
+{
+  NumberType x;
+  NumberType failure_factor = 1e-20;
+  //NumberType failure_factor = 1.000000000000000000000000000001;
+  size_t k = generators.size(); //maximum mirroring actions
+  for(const auto& plane : generators)
+  {
+    x = innerProduct(v,plane) / innerProduct(plane,plane);
+    if (x < power(failure_factor,k)*epsilon)
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
 VectorType mirror(const VectorType& v, const VectorType& plane)
 {
   VectorType help(v.size());

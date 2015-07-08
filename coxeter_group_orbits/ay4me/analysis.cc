@@ -20,16 +20,16 @@
 #include <fstream>
 #include <functional>
 
-int power(int n, int e)
-{
-	int p = n;
-	while (e>1)
-	{
-		p = p*n;
-		e = e-1;
-	}
-	return p;
-}
+// int power(int n, int e)
+// {
+// 	int p = n;
+// 	while (e>1)
+// 	{
+// 		p = p*n;
+// 		e = e-1;
+// 	}
+// 	return p;
+// }
 
 int createOrbit(std::function<void (std::size_t,GeneratorList&)> generatingFunction,VectorType point)
 {
@@ -163,26 +163,12 @@ int main()
 	runtime = (double) (stop - start) / CLOCKS_PER_SEC;
 	analysis_out(file, 120, h3, "H3", runtime);
 
-	// //B8
-	// assert((start = clock())!=-1);
-	// int b8 = createOrbit(generateB, {1,2,3,4,5,6,7,8});
-	// stop = clock();
-	// runtime = (double) (stop - start) / CLOCKS_PER_SEC;
-	// analysis_out(file, power(2,8) * factorial(8), b8, "B8", runtime);
-
-	// //D8
-	// assert((start = clock())!=-1);
-	// int d8 = createOrbit(generateD, {1,2,3,4,5,6,7,8});
-	// stop = clock();
-	// runtime = (double) (stop - start) / CLOCKS_PER_SEC;
-	// analysis_out(file, power(2,8-1) * factorial(8), d8, "D8", runtime);
-
-	// //E7
-	// assert((start = clock())!=-1);
-	// int e7 = createOrbit(generateE7, {1,2,3,4,5,6,7});
-	// stop = clock();
-	// runtime = (double) (stop - start) / CLOCKS_PER_SEC;
-	// analysis_out(file, 2903040, e7, "E7", runtime);
+	//E7
+	assert((start = clock())!=-1);
+	int e7 = createOrbit(generateE7, {1,2,3,4,5,6,7});
+	stop = clock();
+	runtime = (double) (stop - start) / CLOCKS_PER_SEC;
+	analysis_out(file, 2903040, e7, "E7", runtime);
 
 	//H4
 	assert((start = clock())!=-1);
@@ -190,6 +176,20 @@ int main()
 	stop = clock();
 	runtime = (double) (stop - start) / CLOCKS_PER_SEC;
 	analysis_out(file, 14400, h4, "H4", runtime);
+
+	//B8
+	assert((start = clock())!=-1);
+	int b8 = createOrbit(generateB, {1,2,3,4,5,6,7,8});
+	stop = clock();
+	runtime = (double) (stop - start) / CLOCKS_PER_SEC;
+	analysis_out(file, power(2,8) * factorial(8), b8, "B8", runtime);
+
+	//D8
+	assert((start = clock())!=-1);
+	int d8 = createOrbit(generateD, {1,2,3,4,5,6,7,8});
+	stop = clock();
+	runtime = (double) (stop - start) / CLOCKS_PER_SEC;
+	analysis_out(file, power(2,8-1) * factorial(8), d8, "D8", runtime);
 
 	//E8
 	assert((start = clock())!=-1);
