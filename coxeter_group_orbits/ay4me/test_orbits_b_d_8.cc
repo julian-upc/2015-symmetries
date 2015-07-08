@@ -15,25 +15,31 @@
 --------------------------------------------------------------------------------
 */
 
+#define BOOST_TEST_MODULE orbits
+#include <boost/test/included/unit_test.hpp>
+
 #include "orbit.h"
-#include <fstream>
 
+struct b8_fixture {
+  GeneratorList b8generators;
+  b8_fixture() 
+    : b8generators()
+  {generateB(8,b8generators); }
+};
 
-int main()
-{   
-	GeneratorList generators;
-	VectorType v;
-	input("file.txt", v, generators);
-	Orbit generatedOrbit = orbit(generators, v);
-	//sanityCheck(generatedOrbit.size(),"file.txt");
-	std::ofstream file;
-	file.open ("out.txt");
-	out(file, generatedOrbit, true);
+struct d8_fixture {
+  GeneratorList d8generators;
+  d8_fixture() 
+    : d8generators()
+  {generateD(8,d8generators); }
+};
 
+BOOST_FIXTURE_TEST_CASE( b8_orbit, b8_fixture )
+{
+  BOOST_CHECK_EQUAL(orbit(b8generators, {1, 2, 3, 4, 5, 6, 7, 8}).size(), (size_t) 10321920);
 }
 
-// Local Variables:
-// mode:C++
-// c-basic-offset:3
-// indent-tabs-mode:nil
-// End:
+BOOST_FIXTURE_TEST_CASE( d8_orbit, d8_fixture )
+{
+  BOOST_CHECK_EQUAL(orbit(d8generators, {1, 2, 3, 4, 5, 6, 7, 8}).size(), (size_t) 5160960);
+}
