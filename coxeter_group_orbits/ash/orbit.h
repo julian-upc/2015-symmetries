@@ -21,6 +21,7 @@
 #include <vector>
 #include <functional>
 #include <set>
+#include <utility>
 #include <initializer_list>
 #include <iostream>
 #include "types.h"
@@ -80,21 +81,64 @@
       return orbitConstructionRec(generators, v, wholeOrbit);
    }
 
+   bool impreciseEqual(const VectorType& v1, const VectorType& v2 )
+   {
+      for (std::vector<NumberType>::size_type i = 0; i != v1.size(); i++){
+        if(  fabs(v1[i] - v2[i]) >  epsilon){
+           return false; 
+        }
+      }
+      return true;
+   }
+
+
    Orbit orbit(const GeneratorList& generators, const VectorType& v)
    {
       Orbit wholeOrbit = {v};
       Orbit toReflect = {v};
       VectorType ref;
       std::set<VectorType>::iterator it;
-
+      std::set<VectorType>::iterator nextIt; 
+      std::pair<std::set<VectorType>::iterator, bool> p;
+      bool isFoundEqual = false;
       while(!toReflect.empty()){
          it = toReflect.begin();
          for(VectorType::size_type i = 0; i != generators.size(); i++){
-            ref = reflection(*it,generators[i]);  
+            ref = reflection(*it,generators[i]);
+            p = wholeOrbit.insert(ref);
+            if(p.second){
+               isFoundEqual = false;
+               nextIt = p.first;
+               nextIt++;
+               while(!isFoundEqual && wholeOrbit.end() != nextIt && (*nextIt)[0] < ref[0] + epsilon){
+                  if(impreciseEqual(*nextIt, ref)){
+                     wholeOrbit.erase(p.first);
+                     isFoundEqual = true;
+                  } 
+                  nextIt++;
+               }
+               nextIt = p.first;
+	  	if(nextIt != wholeOrbit.begin()){
+		       nextIt--;
+		       while(!isFoundEqual && (*nextIt)[0] > ref[0] - epsilon){
+			  if(impreciseEqual(*nextIt, ref)){
+			     wholeOrbit.erase(p.first);
+			     isFoundEqual = true; 
+			  }
+			  if(nextIt == wholeOrbit.begin()){
+			     break;
+			  }
+			  nextIt--;
+                  }
+               }
+		if( !isFoundEqual )
+			toReflect.insert(ref);
+            }
+            /*
             if(wholeOrbit.find(ref) == wholeOrbit.end()){
                wholeOrbit.insert(ref);
                toReflect.insert(ref);
-            }     
+            }*/     
          } 
          toReflect.erase(it);
       }

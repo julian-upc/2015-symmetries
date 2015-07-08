@@ -9,8 +9,8 @@ int main(int arg, const char* argv[]){
 	time_t start;
 	time_t end;
 
-	std::ofstream f ("CoexeterCalculationTimes.txt");
-	/* 
+	std::ofstream f ("NewCoxeterCalculationTimes.txt");
+	 
 ////////////////////////////////////////////////////////////
 //Coxeter Group B
 	//B3
@@ -20,7 +20,7 @@ int main(int arg, const char* argv[]){
 	Orbit o = orbit(g,v);
 	time(&end);
 	f << "Coxeter Group B3: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";
-	//B4
+/*	//B4
 	g = simple_roots('B', 4);
 	v = getVectorGeneralPosition('B',4);
 	time(&start);
@@ -57,7 +57,7 @@ int main(int arg, const char* argv[]){
 	f << "Coxeter Group B8: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";
 /////////////////////////////////////////////////////////////////////
 //Coxeter Group D
-	//D3
+        //D3
 	g = simple_roots('D', 3);
 	v = getVectorGeneralPosition('D',3);
 	time(&start);
@@ -84,7 +84,7 @@ int main(int arg, const char* argv[]){
 	time(&start);
 	o = orbit(g,v);
 	time(&end);
-	f << "Coxeter Group D6: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";
+	f << "Coxeter Group D6: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";*/
 ////////////////////////////////////////////////////////////
 //Coxeter Group E 
 	//E6
@@ -95,7 +95,7 @@ int main(int arg, const char* argv[]){
 	o = orbit(g,{1.0,2.0,3.0,4.0,5.0,6.0});
 	time(&end);
 	f << "Coxeter Group E6: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";
-	//E7
+	/*//E7
 	g = simple_roots('E', 7);
 	v = getVectorGeneralPosition('E',7);
 	time(&start);
@@ -103,12 +103,12 @@ int main(int arg, const char* argv[]){
 	o = orbit(g,{1.0,2.0,3.0,4.0,5.0,6.0,7.0});
 	time(&end);
 	f << "Coxeter Group E7: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";
-	/*E8
+	//E8
 	g = simple_roots('E', 8);
 	time(&start);
 	o = orbit(g, {1,2,3,4,5,6,7,8});
 	time(&end);
-	f1 << "Coxeter Group E8: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";
+	f << "Coxeter Group E8: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";
 ////////////////////////////////////////////////////////////
 //Coxeter Group F
 	//F4
@@ -121,7 +121,6 @@ int main(int arg, const char* argv[]){
 //////////////////////////////////////////////////////////
 //Coxeter Group H
 	//H3
-*/
 	GeneratorList g = simple_roots('H', 3);
         VectorType v = getVectorGeneralPosition('H',3);
 	time(&start);
@@ -138,7 +137,7 @@ int main(int arg, const char* argv[]){
 	time(&start);
 	o = orbit(g, v);
 	time(&end);
-	f << "Coxeter Group H4: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";
+	f << "Coxeter Group H4: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";*/
 /////////////////////////////////////////////////////////
 	f.close();
 }
