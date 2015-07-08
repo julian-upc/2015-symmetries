@@ -1,3 +1,19 @@
+/* Copyright (c) 2015
+   Constantin Fischer
+   cfischer@mailbox.tu-berlin.de
+
+   This program is free software; you can redistribute it and/or modify it
+   under the terms of the GNU General Public License as published by the
+   Free Software Foundation; either version 3, or (at your option) any
+   later version: http://www.gnu.org/licenses/gpl.txt.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+--------------------------------------------------------------------------------
+*/
+
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -6,8 +22,6 @@
 #include <numeric>
 #include <cmath>
 #include <set>
-//#include <algorithm>
-//#include "stdlib.h"
 
 int main()
 {  
@@ -62,12 +76,7 @@ int main()
     //normalize the normal vectors
     for (int i=0; i<normals.size(); ++i) {
 	double euclidLength = 0;
-	//std::accumulate(normals[i].begin(), normals[i].end, 0);
-	//for (int j=0; j<normals[i].size(); ++j) {
-	//    euclidLength += std::pow(normals[i][j],2);
-	//}
 	euclidLength = std::inner_product(normals[i].begin(), normals[i].end(), normals[i].begin(), euclidLength); //return type equals the type of the start value
-	test = euclidLength;
 	euclidLength = std::sqrt(euclidLength);
 	for (int j=0; j<normals[i].size(); ++j) {
 	    normals[i][j] = normals[i][j] / euclidLength;
@@ -75,9 +84,6 @@ int main()
     }
     
     //generate all words in the generators given by the normal vectors with length up to wordLength
-// //     std::vector<int> words(normals.size()-1);
-//     words.reserve(normals.size()-1);
-//     std::iota(words.begin(), words.end(),0);
 
     //generate the orbit (up to wordLength)
     std::set<std::vector<double> > orbit = {point};
@@ -111,9 +117,6 @@ int main()
 		oFile <<  normals[i][j] << " ";
 	    }
 	}
-// 	for (int i=0; i<words.size(); ++i) {
-// 	    oFile << words[i] << " ";
-// 	}
 	oFile << std::endl << "orbit:" << std::endl;
 	for (auto p : orbit) {
 	    for (int i=0; i<p.size(); ++i) {
