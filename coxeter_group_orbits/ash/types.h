@@ -24,13 +24,13 @@
 #include <iostream>
 #include <initializer_list>
 #include <math.h>
-#include "stl_wrappers.h"
+//#include "stl_wrappers.h"
 
 class NotImplementedException : public std::exception {};
 class InvalidGroupException : public std::exception {};
 
 typedef long double NumberType;
-const static NumberType epsilon = .5;
+const static NumberType epsilon = 1.E-14;
 
 class ImpreciseVector : public std::vector<NumberType>
 {
@@ -66,7 +66,10 @@ public:
 
 };
 
-void output_vector(const ImpreciseVector& item)
+typedef std::vector<NumberType> VectorType;//ImpreciseVector VectorType; 
+typedef std::set<VectorType> Orbit;
+
+void output_vector(const VectorType& item)
    {
       std::cout << "[1,";
       bool first = true;
@@ -74,11 +77,11 @@ void output_vector(const ImpreciseVector& item)
          std::cout << (!first ? "," : "") << element;
          first = false;
       }
-      std::cout << ']';
+      std::cout << "]\n";
    }
 
-template<typename ElementType>
-void output_set(const std::set<ElementType>& item)
+template<typename Element_type>
+void output_set(const std::set<Element_type>& item)
 {
       std::cout << '[';
       bool first = true;
@@ -89,12 +92,6 @@ void output_set(const std::set<ElementType>& item)
       }
       std::cout << ']';
 }
-
-
-
-typedef ImpreciseVector VectorType; //std::vector<NumberType, ImpreciseComp> VectorType;//
-typedef std::set<VectorType> Orbit;
-
 class GeneratorList : public std::vector<VectorType> {
 public:
    GeneratorList(int r, int c) : std::vector<VectorType>(r)

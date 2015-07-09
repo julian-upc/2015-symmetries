@@ -77,8 +77,8 @@
    bool swap(VectorType& a, VectorType& b){
       VectorType x(a);
       for (VectorType::size_type i = 0; i != a.size(); i++){
-            a[i] == b[i];
-            b[i] == x[i];
+            a[i] = b[i];
+            b[i] = x[i];
          }
       return true;
    }
