@@ -24,6 +24,7 @@
 #include <utility>
 #include <initializer_list>
 #include <iostream>
+#include <queue>
 #include "types.h"
 #include "generators.h"
 
@@ -60,7 +61,23 @@
       return p_ref; 
    }
 
+VectorType reflect( const VectorType& v, const VectorType& g )
+{
+	double gv = 0;
+	double gg = 0;
+	for( unsigned int i=0; i < v.size(); i++ )
+	{
+		gv += g[i] * v[i];
+		gg += g[i] * g[i];
+	}
+	NumberType factor = -2.*gv/gg;
+	VectorType sum(v);
+	for( unsigned int i=0; i < v.size(); i++ )
+		sum[i] += factor*g[i];
+	return sum;
+}
 
+/*
    Orbit orbitConstructionRec(const GeneratorList& generators, const VectorType& v, Orbit& solution)
    {   
       VectorType ref;
@@ -79,11 +96,11 @@
    {
       Orbit wholeOrbit;
       return orbitConstructionRec(generators, v, wholeOrbit);
-   }
+   }*/
 
    bool impreciseEqual(const VectorType& v1, const VectorType& v2 )
    {
-      for (std::vector<NumberType>::size_type i = 0; i != v1.size(); i++){
+      for (VectorType::size_type i = 0; i != v1.size(); i++){
         if(  fabs(v1[i] - v2[i]) >  epsilon){
            return false; 
         }
@@ -92,58 +109,64 @@
    }
 
 
-   Orbit orbit(const GeneratorList& generators, const VectorType& v)
-   {
-      Orbit wholeOrbit = {v};
-      Orbit toReflect = {v};
-      VectorType ref;
-      std::set<VectorType>::iterator it;
-      std::set<VectorType>::iterator nextIt; 
-      std::pair<std::set<VectorType>::iterator, bool> p;
-      bool isFoundEqual = false;
-      while(!toReflect.empty()){
-         it = toReflect.begin();
-         for(VectorType::size_type i = 0; i != generators.size(); i++){
-            ref = reflection(*it,generators[i]);
-            p = wholeOrbit.insert(ref);
-            if(p.second){
-               isFoundEqual = false;
-               nextIt = p.first;
-               nextIt++;
-               while(!isFoundEqual && wholeOrbit.end() != nextIt && (*nextIt)[0] < ref[0] + epsilon){
-                  if(impreciseEqual(*nextIt, ref)){
-                     wholeOrbit.erase(p.first);
-                     isFoundEqual = true;
-                  } 
-                  nextIt++;
-               }
-               nextIt = p.first;
-	  	if(nextIt != wholeOrbit.begin()){
-		       nextIt--;
-		       while(!isFoundEqual && (*nextIt)[0] > ref[0] - epsilon){
-			  if(impreciseEqual(*nextIt, ref)){
-			     wholeOrbit.erase(p.first);
-			     isFoundEqual = true; 
-			  }
-			  if(nextIt == wholeOrbit.begin()){
-			     break;
-			  }
-			  nextIt--;
-                  }
-               }
-		if( !isFoundEqual )
-			toReflect.insert(ref);
-            }
-            /*
-            if(wholeOrbit.find(ref) == wholeOrbit.end()){
-               wholeOrbit.insert(ref);
-               toReflect.insert(ref);
-            }*/     
-         } 
-         toReflect.erase(it);
-      }
-      return wholeOrbit;
-   }
+Orbit orbit(const GeneratorList& generators, const VectorType& v1)
+{
+	Orbit wholeOrbit = {v1};
+	std::queue<VectorType,std::deque<VectorType> > toReflect;
+	toReflect.push(v1);
+
+	VectorType v;
+	VectorType ref;
+	Orbit::iterator nextIt; 
+	std::pair<Orbit::iterator, bool> p;
+	bool isFoundEqual = false;
+
+	while( !toReflect.empty() )
+	{
+		v = toReflect.front();
+		toReflect.pop();
+
+		for( const auto g : generators )
+		{
+			ref = reflect(v,g);
+			p = wholeOrbit.insert(ref);
+			if(p.second) //if it was not inserted it is exactly equal to some vector already in the set, so we dont have to do anything
+			{
+				isFoundEqual = false;
+				nextIt = p.first; //save pos of ref in p.first, because we might want to erase it
+				nextIt++; //search to the right of ref
+				while(!isFoundEqual && wholeOrbit.end() != nextIt && (*nextIt)[0] < ref[0] + epsilon)
+				{
+					if(impreciseEqual(*nextIt, ref))
+					{
+						isFoundEqual = true;
+						wholeOrbit.erase(p.first);
+					} 
+					nextIt++;
+				}
+				nextIt = p.first; //search to the left of ref
+				if(nextIt != wholeOrbit.begin())
+				{
+					nextIt--;
+					while(!isFoundEqual && (*nextIt)[0] > ref[0] - epsilon)
+					{
+						if(impreciseEqual(*nextIt, ref))
+						{
+							isFoundEqual = true; 
+							wholeOrbit.erase(p.first);
+						}
+						if(nextIt == wholeOrbit.begin())
+							break;
+						nextIt--;
+					}
+				}
+				if( !isFoundEqual )
+					toReflect.push(ref);
+			}
+		} 
+	}
+	return wholeOrbit;
+}
 
 
 #endif // __ORBIT_H_

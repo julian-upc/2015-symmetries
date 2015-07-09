@@ -48,27 +48,90 @@ BOOST_AUTO_TEST_CASE( generators )
                      );
 }
 
+//////// B ////////
 struct b3_fixture {
   b3_fixture() 
     : generators(simple_roots('B', 3)) 
   {}
   GeneratorList generators;
 };
+struct b4_fixture {
+  b4_fixture() 
+    : generators(simple_roots('B', 4)) 
+  {}
+  GeneratorList generators;
+};
+struct b5_fixture {
+  b5_fixture() 
+    : generators(simple_roots('B', 5)) 
+  {}
+  GeneratorList generators;
+};
+struct b6_fixture {
+  b6_fixture() 
+    : generators(simple_roots('B', 6)) 
+  {}
+  GeneratorList generators;
+};
+struct b7_fixture {
+  b7_fixture() 
+    : generators(simple_roots('B', 7)) 
+  {}
+  GeneratorList generators;
+};
+struct b8_fixture {
+  b8_fixture() 
+    : generators(simple_roots('B', 8)) 
+  {}
+  GeneratorList generators;
+};
 
+//////// D ////////
+struct d5_fixture {
+  d5_fixture() 
+    : generators(simple_roots('D', 5)) 
+  {}
+  GeneratorList generators;
+};
+
+//////// E ////////
 struct e6_fixture {
   e6_fixture() 
     : generators(simple_roots('E', 6)) 
   {}
   GeneratorList generators;
 };
+struct e7_fixture {
+  e7_fixture() 
+    : generators(simple_roots('E', 7)) 
+  {}
+  GeneratorList generators;
+};
 
+//////// F ////////
+struct f4_fixture {
+  f4_fixture() 
+    : generators(simple_roots('F', 4)) 
+  {}
+  GeneratorList generators;
+};
+
+//////// H ////////
 struct h3_fixture {
   h3_fixture() 
     : generators(simple_roots('H', 3)) 
   {}
   GeneratorList generators;
 };
+struct h4_fixture {
+  h4_fixture() 
+    : generators(simple_roots('H', 4)) 
+  {}
+  GeneratorList generators;
+};
 
+
+//////// B ////////
 BOOST_FIXTURE_TEST_CASE( b3_orbit_012, b3_fixture )
 {
   BOOST_CHECK_EQUAL(orbit(generators, {1, 2, 3}).size(), (size_t) 48);
@@ -88,31 +151,69 @@ BOOST_FIXTURE_TEST_CASE( b3_orbit_01, b3_fixture )
 {
   BOOST_CHECK_EQUAL(orbit(generators, {1, 2, 0}).size(), (size_t) 24);
 }
-
 BOOST_FIXTURE_TEST_CASE( b3_orbit_0, b3_fixture )
 {
   BOOST_CHECK_EQUAL(orbit(generators, {1, 0, 0}).size(), (size_t) 6);
 }
-/*
 BOOST_FIXTURE_TEST_CASE( b3_orbit_1, b3_fixture )
 {
   BOOST_CHECK_EQUAL(orbit(generators, {1, 1, 0}).size(), (size_t) 12);
 }
-
 BOOST_FIXTURE_TEST_CASE( b3_orbit_2, b3_fixture )
 {
   BOOST_CHECK_EQUAL(orbit(generators, {1, 1, 1}).size(), (size_t) 8);
 }
-//E6
-BOOST_FIXTURE_TEST_CASE( e6_orbit, e6_fixture )
+
+BOOST_FIXTURE_TEST_CASE( b5_orbit, b5_fixture )
 {
-  BOOST_CHECK_EQUAL(orbit(generators, {1, 1, 1, 1, 1, 1}).size(), (size_t) 8);
+  BOOST_CHECK_EQUAL(orbit(generators, {1, 2, 3, 4, 5}).size(), (size_t) 3840);
+}
+
+BOOST_FIXTURE_TEST_CASE( b6_orbit, b6_fixture )
+{
+  BOOST_CHECK_EQUAL(orbit(generators, {1, 2, 3, 4, 5, 6}).size(), (size_t) 46080);
+}
+
+/*
+BOOST_FIXTURE_TEST_CASE( b7_orbit, b7_fixture )
+{
+  BOOST_CHECK_EQUAL(orbit(generators, {1, 2, 3, 4, 5, 6, 7}).size(), (size_t) 645120);
+}
+BOOST_FIXTURE_TEST_CASE( b8_orbit, b8_fixture )
+{
+  BOOST_CHECK_EQUAL(orbit(generators, {1, 0, 0, 0, 0, 0, 0, 0}).size(), (size_t) 10321920);
 }
 */
-//H3
+//////// D ////////
+BOOST_FIXTURE_TEST_CASE( d5_orbit, d5_fixture )
+{
+  BOOST_CHECK_EQUAL(orbit(generators, {1, 2, 3, 4, 5}).size(), (size_t) 1920);
+}
+
+//////// E ////////
+BOOST_FIXTURE_TEST_CASE( e6_orbit, e6_fixture )
+{
+  BOOST_CHECK_EQUAL(orbit(generators, {1, 2, 3, 4, 5, 6}).size(), (size_t) 51840);
+}
+/*BOOST_FIXTURE_TEST_CASE( e7_orbit, e7_fixture )
+{
+  BOOST_CHECK_EQUAL(orbit(generators, {1, 0, 0, 0, 0, 0, 0}).size(), (size_t) 2903040);
+}
+*/
+//////// F ////////
+BOOST_FIXTURE_TEST_CASE( f4_orbit, f4_fixture )
+{
+  BOOST_CHECK_EQUAL(orbit(generators, {3, 2, 1, -5}).size(), (size_t) 1152);
+}
+
+//////// H ////////
 BOOST_FIXTURE_TEST_CASE( h3_orbit, h3_fixture )
 {
-  BOOST_CHECK_EQUAL(orbit(generators, {1, 2, 3}).size(), (size_t) 8);
+  BOOST_CHECK_EQUAL(orbit(generators, {1, 2, 3}).size(), (size_t) 120);
+}
+BOOST_FIXTURE_TEST_CASE( h4_orbit, h4_fixture )
+{
+  BOOST_CHECK_EQUAL(orbit(generators, {1, 2, 3, 4}).size(), (size_t) 14400);
 }
 
 
