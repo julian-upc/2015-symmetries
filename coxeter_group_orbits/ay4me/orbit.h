@@ -1,6 +1,7 @@
 /* Copyright (c) 2015
    Julian Pfeifle
    julian.pfeifle@upc.edu
+   meike.hatzel@tu-berlin.de
 
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the
@@ -26,6 +27,8 @@
 #include <numeric>
 #include <cmath>
 #include <boost/lexical_cast.hpp>
+#include <queue>
+
 
 class NotImplementedException : public std::exception {};
 class InvalidInputException : public std::logic_error {
@@ -39,60 +42,39 @@ public:
   InvalidGeneratorException(const std::string& s):std::logic_error(s) {};
 };
 
-const static double epsilon = 0.00001; 
+//const static double epsilon = 1e-20;
+const static long double epsilon = 1e-10;
 
-template<typename T>
-T relativeError(const std::vector<T>& x, const std::vector<T>& y)
-{
-  if (x.size() != y.size())
-  {
-    throw std::logic_error("Comparison between vectors of different size.");
-  }
-  std::vector<T> diff(x.size());
-  for (std::size_t i=0;i < x.size();++i)
-  {
-    diff[i] = x[i]-y[i];
-  }
-  T maxDiff = 0.0;
-  T maxVal = 0.0;
-  for (std::size_t i=0;i < x.size();++i)
-  {
-    if (std::fabs(diff[i]) >std::fabs(maxDiff))
-    {
-      maxDiff = std::fabs(diff[i]);
-    }
-    if (std::fabs(x[i]) > std::fabs(maxVal))
-    {
-      maxVal = std::fabs(x[i]);
-    }
-  }
-  if (maxVal == 0.0)
-  {
-    return maxDiff;
-  }
-  return maxDiff/maxVal;
-}
-
+/*
+comparison function, that lexicographical checks two vectors on equality allowing a componentwise error of epsilon
+*/
 template<typename T>
 struct ImpreciseComp{
   bool operator()(const std::vector<T>& x, const std::vector<T>& y) const
   {
-    if (relativeError(x,y) < epsilon)
+    if (x.size() != y.size())
     {
-      return false;
+      throw std::logic_error("Comparison between vectors of different size.");
     }
-    return x < y;
+    for (std::size_t i=0 ; i < x.size() ; ++i)
+    {
+      if (std::fabs(x[i] - y[i]) > epsilon)
+      {
+        return x[i] < y[i];
+      }
+    }
+    return false;
   }
 };
 
-typedef double NumberType;  // this probably isn't going to work
+typedef long double NumberType;  // this probably isn't going to work
 typedef std::vector<NumberType> VectorType;
 typedef std::vector<VectorType> GeneratorList;
-typedef std::set<VectorType, ImpreciseComp<NumberType>> Orbit;
+typedef std::set<VectorType,ImpreciseComp<NumberType>> Orbit;
 
 void out(std::ostream& file,const Orbit& solution, bool outputOrbit);
 
-GeneratorList simple_roots(char type, std::size_t dim)
+GeneratorList simple_roots(char type, std::size_t dim) //actually only needed for the original tests not for the program functionality
 {
    switch(type) {
    case 'b':
@@ -178,12 +160,86 @@ void generateD(std::size_t dim, GeneratorList& generators)
   }
 }
 
+void generateE6(GeneratorList& generators)
+{
+  VectorType v(6);
+  for (int i=0; i<5; ++i)
+    v[i] = -0.5;
+  v[5] = 0.5 * sqrt(3);
+  generateD(5, generators);
+  for (int i=0; i<5; ++i)
+    generators[i].push_back(0);
+  generators.push_back(v);
+}
+
+void generateE7(GeneratorList& generators)
+{
+  VectorType v(7);
+  for (int i=0; i<6; ++i)
+    v[i] = -0.5;
+  v[6] = 0.5 * sqrt(2);
+  generateD(6, generators);
+  for (int i=0; i<6; ++i)
+    generators[i].push_back(0);
+  generators.push_back(v);
+}
+
+void generateE8(GeneratorList& generators)
+{
+  VectorType v(8);
+  for (int i=0; i<8; ++i)
+    v[i] = -0.5;
+  generateD(7,generators);
+  for (int i=0; i<7; ++i)
+    generators[i].push_back(0);
+  generators.push_back(v);
+}
+
+void generateF4(GeneratorList& generators)
+{
+  generators.resize(4,VectorType(4));
+  generators[0][0] = generators[1][1] = generators[2][2] = 1;
+  generators[0][1] = generators[1][2] = -1;
+  generators[3][0] = generators[3][1] = generators[3][2] = generators[3][3] = -0.5;
+}
+
+void generateG2(GeneratorList& generators)
+{
+  generators.resize(2,VectorType(3));
+  generators[0][0] = 1;
+  generators[0][1] = generators[1][0] = generators[1][2] = -1;
+  generators[1][1] = 2;
+}
+
+void generateH3(GeneratorList& generators)
+{
+  const NumberType tau(0.5 + 0.5 * sqrt(5)); // golden ratio
+  generators.resize(3,VectorType(3));
+  generators[0][0] = generators[2][2] = 2;
+  generators[1][0] = -tau; 
+  generators[1][1] = tau - 1; 
+  generators[1][2] = -1;
+}
+
+void generateH4(GeneratorList& generators)
+{
+  const NumberType tau(0.5 + 0.5 * sqrt(5)); // golden ratio
+  generators.resize(4, VectorType(4));
+  generators[0][0] = (1+tau) * 0.5;
+  generators[0][1] = generators[0][2] = generators[0][3] = (1-tau) * 0.5;
+  for (int i=0; i<3; ++i)
+  {
+    generators[i+1][i] = -1;
+    generators[i+1][i+1] = 1;
+  }
+}
+
 void input(std::string filename, VectorType& point, GeneratorList& generators)
 {
   std::ifstream input( filename );
   std::string line; 
   getline( input, line );
-    //process first line
+  //process first line
   if(line.length() < 2)
   {
     throw InvalidInputException("No valid coxeter.");
@@ -204,12 +260,47 @@ void input(std::string filename, VectorType& point, GeneratorList& generators)
         generateD(dim, generators);
         break;
     case 'E':
+        switch(dim) {
+          case 6:
+            generateE6(generators);
+            break;
+          case 7:
+            generateE7(generators);
+            break;
+          case 8:
+            generateE8(generators);
+            break;
+          default:
+            throw InvalidInputException("E with wrong dimension number.");
+        }
         break;
     case 'F':
+        if (dim != 4)
+        {
+          throw InvalidInputException("F with wrong dimension number.");
+        }
+        generateF4(generators);
         break;
     case 'G':
+        if (dim != 2)
+        {
+          throw InvalidInputException("G with wrong dimension number.");
+        }
+        generateG2(generators);
         break;
     case 'H':
+        if( dim != 3 && dim != 4)
+        {
+          throw InvalidInputException("H with wrong dimension number.");
+        }
+        else if(dim == 3)
+        {
+          generateH3(generators);
+        }
+        else
+        {
+          generateH4(generators);
+        }
         break;
     case 'I':
         break;
@@ -246,11 +337,17 @@ int factorial(int n)
   return factorial(n-1)*n;
 }
 
+/*
+determines whether d is a divisor of n
+*/
 bool divisor(int d, int n)
 {
   return n%d == 0;
 }
 
+/*
+checks whether the computed orbit size is a divisor of the maximum orbit size
+*/
 void sanityCheck(int orbitSize, std::string filename)
 {
   std::ifstream input( filename );
@@ -310,16 +407,47 @@ void sanityCheck(int orbitSize, std::string filename)
   }
 }
 
+NumberType innerProduct(const VectorType& v1, const VectorType& v2)
+{
+  NumberType init = 0.0;
+
+  return std::inner_product(v1.begin(),v1.end(),v2.begin(),init);
+}
+
+int power(int n, int e)
+{
+  int p = n;
+  while (e>1)
+  {
+    p = p*n;
+    e = e-1;
+  }
+  return p;
+}
+
+bool qualityCheck(VectorType& v, GeneratorList& generators)
+{
+  NumberType x;
+  NumberType failure_factor = 1e-20;
+  //NumberType failure_factor = 1.000000000000000000000000000001;
+  size_t k = generators.size(); //maximum mirroring actions
+  for(const auto& plane : generators)
+  {
+    x = innerProduct(v,plane) / innerProduct(plane,plane);
+    if (x < power(failure_factor,k)*epsilon)
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
 VectorType mirror(const VectorType& v, const VectorType& plane)
 {
-  //mirror v on plane discribed by vector plane
-  double init = 0;
-  double init2 = 0;
   VectorType help(v.size());
   for (std::size_t i = 0; i<plane.size();++i)
   {
-    help[i] = plane[i]*(2*std::inner_product(v.begin(), v.end(), plane.begin(), init)) /
-      std::inner_product(plane.begin(), plane.end(), plane.begin(), init2);
+    help[i] = plane[i] * (2.0 * innerProduct(v,plane)) / innerProduct(plane,plane);
   }
   VectorType newPoint(v.size());
   for(std::size_t i = 0; i<v.size();++i)
@@ -329,42 +457,24 @@ VectorType mirror(const VectorType& v, const VectorType& plane)
   return newPoint;
 }
 
-void recorbit(const GeneratorList& generators, const VectorType& v, Orbit& history)
-{
-  if(history.find(v) != history.end())
-  {
-    return;
-  }  
-  history.insert(v);
-  for(const auto& plane : generators)
-  {
-    VectorType newVector = mirror(v,plane);
-    recorbit(generators,newVector,history);
-  }
-  return;
-}
-
 void iterorbit(const GeneratorList& generators, const VectorType& v, Orbit& history)
 {
-  std::set<VectorType, ImpreciseComp<NumberType>> unmirroredPoints = {v};
+  std::set<VectorType,ImpreciseComp<NumberType>> unmirroredPoints = {v};
+  std::set<VectorType,ImpreciseComp<NumberType>>::iterator it;
   while(!unmirroredPoints.empty())
   {
-    // std::set<VectorType>::iterator it = unmirroredPoints.begin();
-    // currentPoint = *it;
-    const VectorType& currentPoint(*(unmirroredPoints.begin()));
-    history.insert(currentPoint);
+    it = unmirroredPoints.begin();
     for(const auto& plane : generators)
     {
-      VectorType mirroredPoint = mirror(currentPoint,plane);
-      //mirroredPoint = mirror(currentPoint,plane);
+      VectorType mirroredPoint = mirror(*it,plane);
       if(history.find(mirroredPoint) == history.end())
       {
         unmirroredPoints.insert(mirroredPoint);
       }
     }
-    unmirroredPoints.erase(currentPoint);
+    history.insert(*it);
+    unmirroredPoints.erase(it);
   }
-  return;
 }
 
 Orbit orbit(const GeneratorList& generators, const VectorType& v)
@@ -373,7 +483,6 @@ Orbit orbit(const GeneratorList& generators, const VectorType& v)
   iterorbit(generators, v, solution);
   return solution;
 }
-
 
 void out(std::ostream& file,const Orbit& solution, bool outputOrbit)
 {

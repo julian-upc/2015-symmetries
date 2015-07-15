@@ -1,6 +1,7 @@
 /* Copyright (c) 2015
    Julian Pfeifle
    julian.pfeifle@upc.edu
+   meike.hatzel@tu-berlin.de
 
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the

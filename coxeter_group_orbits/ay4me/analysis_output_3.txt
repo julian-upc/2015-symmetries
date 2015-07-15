@@ -1,0 +1,60 @@
+B3
+ got: 48 wanted: 48
+runtime: 0.000519
+
+D3
+ got: 24 wanted: 24
+runtime: 0.000198
+
+B4
+ got: 384 wanted: 384
+runtime: 0.005236
+
+D4
+ got: 192 wanted: 192
+runtime: 0.002428
+
+B5
+ got: 3840 wanted: 3840
+runtime: 0.047172
+
+D5
+ got: 1920 wanted: 1920
+runtime: 0.021503
+
+B6
+ got: 46080 wanted: 46080
+runtime: 0.837937
+
+D6
+ got: 23040 wanted: 23040
+runtime: 0.397108
+
+B7
+ got: 645120 wanted: 645120
+runtime: 17.814
+
+D7
+ got: 322560 wanted: 322560
+runtime: 8.48889
+
+E6
+ got: 74880 wanted: 51840
+runtime: 1.58248
+
+F4
+ got: 1152 wanted: 1152
+runtime: 0.009047
+
+H3
+ got: 120 wanted: 120
+runtime: 0.000589
+
+D8
+ got: 5160960 wanted: 5160960
+runtime: 196.681
+
+E7
+ got: 5437440 wanted: 2903040
+runtime: 189.31
+
