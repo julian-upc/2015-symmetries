@@ -1,0 +1,36 @@
+SHELL = /bin/sh
+
+# overwrite suffixes
+.SUFFIXES:
+.SUFFIXES: .cpp .o .h
+
+# general compiler settings
+CC = g++
+WFLAGS = -Wall -Werror -Wextra -Wpedentic
+CFLAGS = $(WFLAGS) -std=c++1y -o3 -g 
+
+# general directory settings
+BOOSTDIR = /media/pm2-211/boost_1_58_0
+INCLUDEDIR = -I. -I$(BOOSTDIR) # includes this and boost directory
+
+# general library settings
+LIBDIR = -L$(BOOSTDIR)/lib # specifies directory to search for libraries
+LIBS = -lboost_unit_test_framework # use this library
+
+# define files and folders and names
+COREDIR = ./math
+TESTDIR = ./tests
+OBJDIR = ./bin
+MAIN = TESTS
+
+all: clean compileTests
+
+compileTests: compileTests.o
+	$(CC) $(LIBDIR) $(CFLAGS) $< $(LIBS) -o $@
+
+compileTests.o: $(COREDIR)/%.h $(TESTDIR)/%.cpp
+	$(CC) $(INCLUDEDIR) $(CFLAGS) -c $< $(LIBS) -o $@
+
+clean: 
+	rm -rf $(OBJDIR)/*
+	rm -f $(MAIN)
